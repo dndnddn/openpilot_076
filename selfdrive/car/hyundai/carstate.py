@@ -8,6 +8,9 @@ GearShifter = car.CarState.GearShifter
 
 
 class CarState(CarStateBase):
+  def __init__(self, CP):
+    super().__init__(CP)
+
   def update(self, cp, cp_cam):
     ret = car.CarState.new_message()
 
@@ -36,8 +39,11 @@ class CarState(CarStateBase):
     ret.steerWarning = cp.vl["MDPS12"]['CF_Mdps_ToiUnavail'] != 0
 
     # cruise state
-    ret.cruiseState.available = True
-    ret.cruiseState.enabled = cp.vl["SCC12"]['ACCMode'] != 0
+    #ret.cruiseState.available = True
+    #ret.cruiseState.enabled = cp.vl["SCC12"]['ACCMode'] != 0
+    ret.cruiseState.available = (cp.vl["SCC11"]["MainMode_ACC"] != 0) #if not self.no_radar else cp.vl['EMS16']['CRUISE_LAMP_M']    
+    ret.cruiseState.enabled = (cp.vl["SCC12"]['ACCMode'] != 0) #if not self.no_radar else  (cp.vl["LVR12"]['CF_Lvr_CruiseSet'] != 0)
+
     ret.cruiseState.standstill = cp.vl["SCC11"]['SCCInfoDisplay'] == 4.
 
     if ret.cruiseState.enabled:
@@ -112,6 +118,8 @@ class CarState(CarStateBase):
     # save the entire LKAS11 and CLU11
     self.lkas11 = cp_cam.vl["LKAS11"]
     self.clu11 = cp.vl["CLU11"]
+    self.mdps12 = cp.vl["MDPS12"]
+    
     self.park_brake = cp.vl["CGW1"]['CF_Gway_ParkBrakeSw']
     self.steer_state = cp.vl["MDPS12"]['CF_Mdps_ToiActive'] # 0 NOT ACTIVE, 1 ACTIVE
     self.lead_distance = cp.vl["SCC11"]['ACC_ObjDist']
@@ -166,8 +174,14 @@ class CarState(CarStateBase):
       ("CF_Lvr_GearInf", "LVR11", 0),        # Transmission Gear (0 = N or P, 1-8 = Fwd, 14 = Rev)
 
       ("CR_Mdps_StrColTq", "MDPS12", 0),
+      ("CF_Mdps_Def", "MDPS12", 0),    #
       ("CF_Mdps_ToiActive", "MDPS12", 0),
       ("CF_Mdps_ToiUnavail", "MDPS12", 0),
+      ("CF_Mdps_MsgCount2", "MDPS12", 0),  #
+      ("CF_Mdps_Chksum2", "MDPS12", 0),    #
+      ("CF_Mdps_ToiFlt", "MDPS12", 0),     #
+      ("CF_Mdps_SErr", "MDPS12", 0),       #
+      ("CR_Mdps_StrTq", "MDPS12", 0),      #
       ("CF_Mdps_FailStat", "MDPS12", 0),
       ("CR_Mdps_OutTq", "MDPS12", 0),
 
@@ -187,7 +201,7 @@ class CarState(CarStateBase):
     checks = [
       # address, frequency
       ("MDPS12", 50),
-      ("TCS13", 50),
+      #("TCS13", 50),
       ("TCS15", 10),
       ("CLU11", 50),
       ("ESP12", 100),
@@ -197,8 +211,8 @@ class CarState(CarStateBase):
       ("SAS11", 100),
       ("SCC11", 50),
       ("SCC12", 50),
-      ("EMS12", 100),
-      ("EMS16", 100),
+      #("EMS12", 100),
+      #("EMS16", 100),
     ]
     if CP.carFingerprint in FEATURES["use_cluster_gears"]:
       signals += [
@@ -242,11 +256,13 @@ class CarState(CarStateBase):
       ("CF_Lkas_LdwsRHWarning", "LKAS11", 0),
       ("CF_Lkas_HbaLamp", "LKAS11", 0),
       ("CF_Lkas_FcwBasReq", "LKAS11", 0),
+      ("CF_Lkas_ToiFlt", "LKAS11", 0),  #  append
       ("CF_Lkas_HbaSysState", "LKAS11", 0),
       ("CF_Lkas_FcwOpt", "LKAS11", 0),
       ("CF_Lkas_HbaOpt", "LKAS11", 0),
       ("CF_Lkas_FcwSysState", "LKAS11", 0),
       ("CF_Lkas_FcwCollisionWarning", "LKAS11", 0),
+      ("CF_Lkas_MsgCount", "LKAS11", 0),  #  append
       ("CF_Lkas_FusionState", "LKAS11", 0),
       ("CF_Lkas_FcwOpt_USM", "LKAS11", 0),
       ("CF_Lkas_LdwsOpt_USM", "LKAS11", 0)

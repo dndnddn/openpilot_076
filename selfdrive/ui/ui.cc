@@ -336,6 +336,8 @@ void handle_message(UIState *s, SubMaster &sm) {
     }
     scene.v_cruise = data.getVCruise();
     scene.v_ego = data.getVEgo();
+    scene.angleSteers = data.getAngleSteers();
+    scene.angleSteersDes = data.getAngleSteersDes();
     scene.curvature = data.getCurvature();
     scene.engaged = data.getEnabled();
     scene.engageable = data.getEngageable();
@@ -443,6 +445,9 @@ void handle_message(UIState *s, SubMaster &sm) {
     scene.freeSpace = data.getFreeSpace();
     scene.thermalStatus = data.getThermalStatus();
     scene.paTemp = data.getPa0();
+
+    scene.maxBatTemp = data.getBat();
+    scene.maxCpuTemp = data.getCpu0(); 
 
     s->thermal_started = data.getStarted();
   }
