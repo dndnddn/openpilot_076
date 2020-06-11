@@ -41,6 +41,7 @@ class Controls:
     gc.disable()
     set_realtime_priority(3)
 
+    print( " controlsd.py start")
     # Setup sockets
     self.pm = pm
     if self.pm is None:
@@ -569,7 +570,6 @@ class Controls:
       self.prof.display()
 
 def main(sm=None, pm=None, logcan=None):
-  print( " controlsd.py start")
   controls = Controls(sm, pm, logcan)
   controls.controlsd_thread()
 
