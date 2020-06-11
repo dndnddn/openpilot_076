@@ -57,6 +57,8 @@ static void ui_draw_sidebar_battery_icon(UIState *s) {
   char temp_value_str[32];
   snprintf(temp_value_str, sizeof(temp_value_str), "%d", s->scene.batteryPercent );
   nvgTextBox(s->vg, battery_img_x, battery_img_y, battery_img_w, temp_value_str, NULL);
+
+  printf( "patterypercent = %d\n", s->scene.batteryPercent )
 }
 
 static void ui_draw_sidebar_network_type(UIState *s) {
