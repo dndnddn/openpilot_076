@@ -131,6 +131,8 @@ class Controls:
 
     self.startup_event = get_startup_event(car_recognized, controller_available, hw_type)
 
+    print( "self.startup_event = {} ".format( self.startup_event ) )
+
     if not sounds_available:
       self.events.add(EventName.soundsUnavailable, static=True)
     if internet_needed:
