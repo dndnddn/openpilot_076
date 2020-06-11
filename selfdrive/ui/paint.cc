@@ -799,6 +799,10 @@ static void ui_draw_vision_maxspeed(UIState *s) {
   } else {
     ui_draw_text(s->vg, text_x, 242, "N/A", 42 * 2.3, COLOR_WHITE_ALPHA(100), s->font_sans_semibold);
   }
+
+  //BB START: add new measures panel  const int bb_dml_w = 180;
+  bb_ui_draw_UI(s);
+  //BB END: add new measures panel   
 }
 
 static void ui_draw_vision_speedlimit(UIState *s) {
@@ -857,9 +861,7 @@ static void ui_draw_vision_speedlimit(UIState *s) {
     ui_draw_text(s->vg, text_x, viz_speedlim_y + (is_speedlim_valid ? 170 : 165), "N/A", 42*2.3, color, s->font_sans_semibold);
   }
 
-   //BB START: add new measures panel  const int bb_dml_w = 180;
-  bb_ui_draw_UI(s);
-  //BB END: add new measures panel   
+
 }
 
 static void ui_draw_vision_speed(UIState *s) {
