@@ -41,7 +41,7 @@ class Controls:
     gc.disable()
     set_realtime_priority(3)
 
-    print( " controlsd.py start")
+
     # Setup sockets
     self.pm = pm
     if self.pm is None:
@@ -58,7 +58,7 @@ class Controls:
       can_timeout = None if os.environ.get('NO_CAN_TIMEOUT', False) else 100
       self.can_sock = messaging.sub_sock('can', timeout=can_timeout)
 
-    print( " controlsd.py can_sock")
+
     # wait for one health and one CAN packet
     hw_type = messaging.recv_one(self.sm.sock['health']).health.hwType
     has_relay = hw_type in [HwType.blackPanda, HwType.uno]
