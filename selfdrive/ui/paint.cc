@@ -896,7 +896,7 @@ static void ui_draw_vision_event(UIState *s) {
     const int bg_wheel_size = 96;
     const int bg_wheel_x = viz_event_x + (viz_event_w-bg_wheel_size);
     const int bg_wheel_y = viz_event_y + (bg_wheel_size/2);
-    bool is_engageable = s->scene->engageable;
+    bool is_engageable = s->scene.engageable;
 
     NVGcolor color = COLOR_BLACK_ALPHA(0);
 
