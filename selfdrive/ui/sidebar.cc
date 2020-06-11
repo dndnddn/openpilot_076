@@ -59,10 +59,8 @@ static void ui_draw_sidebar_battery_icon(UIState *s) {
   ui_draw_image(s->vg, battery_img_x, battery_img_y, battery_img_w, battery_img_h, battery_img, 1.0f);
 
   char temp_value_str1[32];
-  char temp_carging = '+';
-  
-  if( !batteryCharging ) temp_carging = '-';
-  snprintf(temp_value_str1, sizeof(temp_value_str1), "%d %c", batteryPercent, temp_carging );
+
+  snprintf(temp_value_str1, sizeof(temp_value_str1), "%d%", batteryPercent );
   nvgTextBox(s->vg, battery_img_x, battery_img_y - 2, battery_img_w, temp_value_str1, NULL);
 }
 
