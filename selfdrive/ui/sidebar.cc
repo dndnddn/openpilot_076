@@ -48,17 +48,17 @@ static void ui_draw_sidebar_battery_icon(UIState *s) {
   const int battery_img_y = 255;
 
   int battery_img = s->scene.batteryCharging ? s->img_battery_charging : s->img_battery;
+  int batteryPercent = s->scene.batteryPercent;
 
   ui_draw_rect(s->vg, battery_img_x + 6, battery_img_y + 5,
-               ((battery_img_w - 19) * (s->scene.batteryPercent * 0.01)), battery_img_h - 11, COLOR_WHITE);
+               ((battery_img_w - 19) * (batteryPercent * 0.01)), battery_img_h - 11, COLOR_WHITE);
 
   ui_draw_image(s->vg, battery_img_x, battery_img_y, battery_img_w, battery_img_h, battery_img, 1.0f);
 
   char temp_value_str[32];
-  snprintf(temp_value_str, sizeof(temp_value_str), "%d", s->scene.batteryPercent );
-  nvgTextBox(s->vg, battery_img_x, battery_img_y, battery_img_w, temp_value_str, NULL);
+  snprintf(temp_value_str, sizeof(temp_value_str), "%d", batteryPercent );
+  nvgTextBox(s->vg, battery_img_x, battery_img_y - 2, battery_img_w, temp_value_str, NULL);
 
-  printf( "patterypercent = %d\n", s->scene.batteryPercent )
 }
 
 static void ui_draw_sidebar_network_type(UIState *s) {
