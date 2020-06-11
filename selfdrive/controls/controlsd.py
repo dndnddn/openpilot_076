@@ -567,6 +567,7 @@ class Controls:
       self.prof.display()
 
 def main(sm=None, pm=None, logcan=None):
+  print( " controlsd.py start")
   controls = Controls(sm, pm, logcan)
   controls.controlsd_thread()
 
