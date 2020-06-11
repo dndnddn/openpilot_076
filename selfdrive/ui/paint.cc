@@ -896,18 +896,25 @@ static void ui_draw_vision_event(UIState *s) {
     const int bg_wheel_size = 96;
     const int bg_wheel_x = viz_event_x + (viz_event_w-bg_wheel_size);
     const int bg_wheel_y = viz_event_y + (bg_wheel_size/2);
+    bool is_engageable = s->scene->engageable;
+
     NVGcolor color = COLOR_BLACK_ALPHA(0);
+
+
+
     if (s->status == STATUS_ENGAGED) {
       color = nvgRGBA(23, 134, 68, 255);
     } else if (s->status == STATUS_WARNING) {
       color = COLOR_OCHRE;
+    } else if (is_engageable) {
+        color = nvgRGBA(23, 51, 73, 255);
     } else {
       color = nvgRGBA(23, 51, 73, 255);
     }
 
-    if (s->scene.engageable){
-      ui_draw_circle_image(s->vg, bg_wheel_x, bg_wheel_y, bg_wheel_size, s->img_wheel, color, 1.0f, bg_wheel_y - 25);
-    }
+    //if (s->scene.engageable){
+    ui_draw_circle_image(s->vg, bg_wheel_x, bg_wheel_y, bg_wheel_size, s->img_wheel, color, 1.0f, bg_wheel_y - 25);
+   // }
   }
 }
 
