@@ -909,7 +909,7 @@ static void ui_draw_vision_event(UIState *s) {
     } else if (is_engageable) {
         color = nvgRGBA(23, 51, 73, 255);
     } else {
-      color = nvgRGBA(200, 51, 73, 255);
+      color = nvgRGBA(200, 51, 73, 100);
     }
 
     //if (s->scene.engageable){
