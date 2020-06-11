@@ -49,7 +49,7 @@ static void ui_draw_sidebar_battery_icon(UIState *s) {
 
   
   int batteryPercent = s->scene.batteryPercent;
-  int batteryCharging = s->scene.batteryCharging
+  int batteryCharging = s->scene.batteryCharging;
   int battery_img = batteryCharging ? s->img_battery_charging : s->img_battery;
 
 
