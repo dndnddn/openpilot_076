@@ -45,6 +45,7 @@ class CarController():
     self.resume_cnt = 0
     self.last_resume_frame = 0
     self.last_lead_distance = 0
+    self.lkas_button = True
     self.longcontrol = False
 
   def update(self, enabled, CS, frame, actuators, pcm_cancel_cmd, visual_alert,
@@ -54,8 +55,15 @@ class CarController():
     apply_steer = apply_std_steer_torque_limits(new_steer, self.apply_steer_last, CS.out.steeringTorque, SteerLimitParams)
     self.steer_rate_limited = new_steer != apply_steer
 
+
+    ### LKAS button to temporarily disable steering
+    if not CS.lkas_error:
+      if self.lkas_button != CS.lkas_button_on:
+         self.lkas_button = CS.lkas_button_on
+
+
     # disable if steer angle reach 90 deg, otherwise mdps fault in some models
-    lkas_active = enabled and abs(CS.out.steeringAngle) < 90.
+    lkas_active = enabled and abs(CS.out.steeringAngle) < 90. and self.lkas_button
 
     # fix for Genesis hard fault at low speed
     if CS.out.vEgo < 16.7 and self.car_fingerprint == CAR.HYUNDAI_GENESIS:

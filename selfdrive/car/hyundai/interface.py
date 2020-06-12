@@ -5,7 +5,7 @@ from selfdrive.car.hyundai.values import Ecu, ECU_FINGERPRINT, CAR, FINGERPRINTS
 from selfdrive.car import STD_CARGO_KG, scale_rot_inertia, scale_tire_stiffness, is_ecu_disconnected, gen_empty_fingerprint
 from selfdrive.car.interfaces import CarInterfaceBase
 
-
+EventName = car.CarEvent.EventName
 ButtonType = car.CarState.ButtonEvent.Type
 class CarInterface(CarInterfaceBase):
 
@@ -211,6 +211,9 @@ class CarInterface(CarInterfaceBase):
     #ret.buttonEvents = []    
 
     events = self.create_common_events(ret)
+    if not self.CS.lkas_button_on:
+      events.add( EventName.lkasButtonOff )
+
     #TODO: addd abs(self.CS.angle_steers) > 90 to 'steerTempUnavailable' event
 
     # low speed steer alert hysteresis logic (only for cars with steer cut off above 10 m/s)

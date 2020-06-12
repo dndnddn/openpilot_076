@@ -439,6 +439,15 @@ EVENTS = {
       Priority.LOW, VisualAlert.steerRequired, AudibleAlert.chimePrompt, 1., 2., 3.),
   },
 
+
+  EventName.lkasButtonOff: {
+    ET.WARNING: Alert(
+      "lkasButtonOff",
+      "LKAS button off",
+      "",
+      AlertStatus.userPrompt, AlertSize.small,
+      Priority.LOW, VisualAlert.none, AudibleAlert.none, 0., 0., .1),
+  },
   # ********** events that affect controls state transitions **********
 
   EventName.pcmEnable: {
@@ -535,7 +544,7 @@ EVENTS = {
   },
 
   EventName.wrongGear: {
-    ET.SOFT_DISABLE: SoftDisableAlert("Gear not D"),
+    ET.USER_DISABLE: EngagementAlert(AudibleAlert.chimeDisengage),  #ET.SOFT_DISABLE: SoftDisableAlert("Gear not D"),
     ET.NO_ENTRY: NoEntryAlert("Gear not D"),
   },
 
@@ -642,8 +651,9 @@ EVENTS = {
     ET.NO_ENTRY: NoEntryAlert("Gas Error: Restart the Car"),
   },
 
+
   EventName.reverseGear: {
-    ET.IMMEDIATE_DISABLE: ImmediateDisableAlert("Reverse Gear"),
+    ET.USER_DISABLE: EngagementAlert(AudibleAlert.chimeDisengage),
     ET.NO_ENTRY: NoEntryAlert("Reverse Gear"),
   },
 

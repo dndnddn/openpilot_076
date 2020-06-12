@@ -13,7 +13,9 @@ class CarState(CarStateBase):
 
     self.cruise_main_button = False
     self.cruise_buttons = False
-    self.lkas_button_on = False    
+
+    self.lkas_button_on = False
+    self.lkas_error = False
 
     self.prev_cruise_main_button = False
     self.prev_cruise_buttons = False
@@ -63,16 +65,13 @@ class CarState(CarStateBase):
     ret.cruiseState.enabled = self.acc_active
     ret.cruiseState.standstill = cp.vl["SCC11"]['SCCInfoDisplay'] == 4.
 
-
-    if ret.cruiseState.enabled:
+    #if ret.cruiseState.enabled:
+    if self.acc_active:
       is_set_speed_in_mph = int(cp.vl["CLU11"]["CF_Clu_SPEED_UNIT"])
       speed_conv = CV.MPH_TO_MS if is_set_speed_in_mph else CV.KPH_TO_MS
       ret.cruiseState.speed = cp.vl["SCC11"]['VSetDis'] * speed_conv
     else:
       ret.cruiseState.speed = 0
-
-    self.cruise_main_button = cp.vl["CLU11"]["CF_Clu_CruiseSwMain"]
-    self.cruise_buttons = cp.vl["CLU11"]["CF_Clu_CruiseSwState"]      
 
     # TODO: Find brake pressure
     ret.brake = 0
@@ -136,6 +135,9 @@ class CarState(CarStateBase):
       else:
         ret.gearShifter = GearShifter.unknown
 
+
+    self.cruise_main_button = cp.vl["CLU11"]["CF_Clu_CruiseSwMain"]
+    self.cruise_buttons = cp.vl["CLU11"]["CF_Clu_CruiseSwState"]      
 
     self.lkas_error = cp_cam.vl["LKAS11"]["CF_Lkas_LdwsSysState"] == 7
     if not self.lkas_error:
