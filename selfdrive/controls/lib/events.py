@@ -444,7 +444,6 @@ EVENTS = {
     ET.WARNING: Alert(
       "lkasButtonOff",
       "LKAS button off",
-      "",
       AlertStatus.userPrompt, AlertSize.small,
       Priority.LOW, VisualAlert.none, AudibleAlert.none, 0., 0., .1),
   },
