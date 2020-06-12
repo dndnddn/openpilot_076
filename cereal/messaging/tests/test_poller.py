@@ -121,7 +121,7 @@ class TestPoller(unittest.TestCase):
   def test_msg(self):
     # controlsState
     dat = messaging.new_message('controlsState')
-    dat.valid = 1
+    #dat.valid = 1
     controlsState = dat.controlsState
     controlsState.alertText1 = self.AM.alert_text_1
     controlsState.alertText2 = self.AM.alert_text_2
