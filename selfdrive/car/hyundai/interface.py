@@ -182,7 +182,7 @@ class CarInterface(CarInterfaceBase):
 
 
     # most HKG cars has no long control, it is safer and easier to engage by main on
-    ret.cruiseState.enabled = ret.cruiseState.available #if not self.CC.longcontrol else ret.cruiseState.enabled
+    ret.cruiseState.enabled = ret.cruiseState.available if not self.CC.longcontrol else ret.cruiseState.enabled
 
     # TODO: button presses
     buttonEvents = []
