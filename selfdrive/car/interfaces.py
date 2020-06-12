@@ -90,21 +90,21 @@ class CarInterfaceBase():
 
     if cs_out.doorOpen:
       events.add(EventName.doorOpen)
-    if cs_out.seatbeltUnlatched:
+    elif cs_out.seatbeltUnlatched:
       events.add(EventName.seatbeltNotLatched)
-    if cs_out.gearShifter != GearShifter.drive and cs_out.gearShifter not in extra_gears:
+    elif cs_out.gearShifter != GearShifter.drive and cs_out.gearShifter not in extra_gears:
       events.add(EventName.wrongGear)
-    if cs_out.gearShifter == GearShifter.reverse:
+    elif cs_out.gearShifter == GearShifter.reverse:
       events.add(EventName.reverseGear)
-    if not cs_out.cruiseState.available:
+    elif not cs_out.cruiseState.available:
       events.add(EventName.wrongCarMode)
-    if cs_out.espDisabled:
+    elif cs_out.espDisabled:
       events.add(EventName.espDisabled)
-    if cs_out.gasPressed:
+    elif cs_out.gasPressed:
       events.add(EventName.gasPressed)
-    if cs_out.stockFcw:
+    elif cs_out.stockFcw:
       events.add(EventName.stockFcw)
-    if cs_out.stockAeb:
+    elif cs_out.stockAeb:
       events.add(EventName.stockAeb)
     if cs_out.vEgo > MAX_CTRL_SPEED:
       events.add(EventName.speedTooHigh)
@@ -128,7 +128,9 @@ class CarInterfaceBase():
     #  elif not cs_out.cruiseState.enabled:
     #    events.add(EventName.pcmDisable)
 
-    if pcm_enable:
+    if events != None:
+      pass
+    elif pcm_enable:
       if cs_out.cruiseState.enabled != self.cruise_enabled_prev:
         if cs_out.cruiseState.enabled:
           events.add(EventName.pcmEnable)
