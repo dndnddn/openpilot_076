@@ -62,8 +62,11 @@ class CarState(CarStateBase):
     self.acc_active = (cp.vl["SCC12"]['ACCMode'] != 0)
 
     ret.cruiseState.available = self.main_on
-    ret.cruiseState.enabled = self.acc_active
+    #ret.cruiseState.enabled = self.acc_active
     ret.cruiseState.standstill = cp.vl["SCC11"]['SCCInfoDisplay'] == 4.
+
+    # most HKG cars has no long control, it is safer and easier to engage by main on
+    ret.cruiseState.enabled = ret.cruiseState.available  #if not self.CC.longcontrol else ret.cruiseState.enabled
 
     #if ret.cruiseState.enabled:
     if self.acc_active:
