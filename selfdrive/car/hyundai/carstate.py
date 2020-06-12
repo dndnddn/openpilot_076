@@ -41,8 +41,8 @@ class CarState(CarStateBase):
     # cruise state
     #ret.cruiseState.available = True
     #ret.cruiseState.enabled = cp.vl["SCC12"]['ACCMode'] != 0
-    ret.cruiseState.available = (cp.vl["SCC11"]["MainMode_ACC"] != 0) #if not self.no_radar else cp.vl['EMS16']['CRUISE_LAMP_M']    
-    ret.cruiseState.enabled = (cp.vl["SCC12"]['ACCMode'] != 0) #if not self.no_radar else  (cp.vl["LVR12"]['CF_Lvr_CruiseSet'] != 0)
+    ret.cruiseState.available = (cp.vl["SCC11"]["MainMode_ACC"] != 0) #if not self.no_radar else cp.vl['EMS16']['CRUISE_LAMP_M']     # main_on
+    ret.cruiseState.enabled = (cp.vl["SCC12"]['ACCMode'] != 0) #if not self.no_radar else  (cp.vl["LVR12"]['CF_Lvr_CruiseSet'] != 0)  # pcm_acc_status
 
     ret.cruiseState.standstill = cp.vl["SCC11"]['SCCInfoDisplay'] == 4.
 
