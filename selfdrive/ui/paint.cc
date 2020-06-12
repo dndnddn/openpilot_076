@@ -865,31 +865,19 @@ static void ui_draw_vision_speedlimit(UIState *s) {
 
 static void ui_draw_debug(UIState *s) 
 {
-  const UIScene *scene = &s->scene;
-  int ui_viz_rx = scene->ui_viz_rx;
-  int ui_viz_rw = scene->ui_viz_rw;
+  UIScene &scene = s->scene;
+  //const UIScene *scene = &s->scene;
 
-
-  const int viz_speed_w = 280;
-  const int viz_speed_x = ui_viz_rx+((ui_viz_rw/2)-(viz_speed_w/2));
 
   char speed_str[512];
-
-  int  y_pos = 0;
-  int  x_pos = 0;
-
-  x_pos = ui_viz_rx + 300;
-  y_pos = 150; 
-  
-
 
   nvgTextAlign(s->vg, NVG_ALIGN_LEFT | NVG_ALIGN_BASELINE);
   nvgFontSize(s->vg, 36*1.5*fFontSize);
 
-  snprintf(speed_str, sizeof(speed_str), "%s", scene->alert.text1 );
+  snprintf(speed_str, sizeof(speed_str), "%s", scene.alert.text1 );
   nvgText(s->vg, 0, 1020, speed_str, NULL);  
 
-  snprintf(speed_str, sizeof(speed_str), "%s", scene->alert.text2 );
+  snprintf(speed_str, sizeof(speed_str), "%s", scene.alert.text2 );
   nvgText(s->vg, 0, 1078, speed_str, NULL);
 
 }
