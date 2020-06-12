@@ -38,15 +38,25 @@ class CarState(CarStateBase):
     ret.steeringPressed = abs(ret.steeringTorque) > STEER_THRESHOLD
     ret.steerWarning = cp.vl["MDPS12"]['CF_Mdps_ToiUnavail'] != 0
 
+
+    self.main_on = (cp.vl["SCC11"]["MainMode_ACC"] != 0) #if not self.no_radar else cp.vl['EMS16']['CRUISE_LAMP_M']
+    self.acc_active = (cp.vl["SCC12"]['ACCMode'] != 0) #if not self.no_radar else (cp.vl["LVR12"]['CF_Lvr_CruiseSet'] != 0)
+
+
     # cruise state
+    ret.cruiseState.available = bool(self.CS.main_on)
+    ret.cruiseState.enabled =  bool(self.CS.main_on)
+    
+
     #ret.cruiseState.available = True
     #ret.cruiseState.enabled = cp.vl["SCC12"]['ACCMode'] != 0
-    ret.cruiseState.available = (cp.vl["SCC11"]["MainMode_ACC"] != 0) #if not self.no_radar else cp.vl['EMS16']['CRUISE_LAMP_M']     # main_on
-    ret.cruiseState.enabled = (cp.vl["SCC12"]['ACCMode'] != 0) #if not self.no_radar else  (cp.vl["LVR12"]['CF_Lvr_CruiseSet'] != 0)  # pcm_acc_status
+    #ret.cruiseState.available = (cp.vl["SCC11"]["MainMode_ACC"] != 0)
+    #ret.cruiseState.enabled = (cp.vl["SCC12"]['ACCMode'] != 0)
 
     ret.cruiseState.standstill = cp.vl["SCC11"]['SCCInfoDisplay'] == 4.
 
-    if ret.cruiseState.enabled:
+    #if ret.cruiseState.enabled:
+    if self.acc_active != 0:
       is_set_speed_in_mph = int(cp.vl["CLU11"]["CF_Clu_SPEED_UNIT"])
       speed_conv = CV.MPH_TO_MS if is_set_speed_in_mph else CV.KPH_TO_MS
       ret.cruiseState.speed = cp.vl["SCC11"]['VSetDis'] * speed_conv
