@@ -118,6 +118,54 @@ class TestPoller(unittest.TestCase):
     del sub
     context.term()
 
+  def test_msg(self):
+    # controlsState
+    dat = messaging.new_message('controlsState')
+    dat.valid = 1
+    controlsState = dat.controlsState
+    controlsState.alertText1 = self.AM.alert_text_1
+    controlsState.alertText2 = self.AM.alert_text_2
+    controlsState.alertSize = self.AM.alert_size
+    controlsState.alertStatus = self.AM.alert_status
+    controlsState.alertBlinkingRate = self.AM.alert_rate
+    controlsState.alertType = self.AM.alert_type
+    controlsState.alertSound = self.AM.audible_alert
+    controlsState.driverMonitoringOn = self.sm['dMonitoringState'].faceDetected
+    #controlsState.canMonoTimes = list(CS.canMonoTimes)
+    #controlsState.planMonoTime = self.sm.logMonoTime['plan']
+    #controlsState.pathPlanMonoTime = self.sm.logMonoTime['pathPlan']
+    controlsState.enabled = 1
+    controlsState.active = 1
+    controlsState.vEgo = 1
+    controlsState.vEgoRaw = 1
+    controlsState.angleSteers = 1
+    controlsState.curvature = 1
+    controlsState.steerOverride =1
+    controlsState.state = 1
+    controlsState.engageable = 1
+    controlsState.longControlState = 1
+    #controlsState.vPid = float(self.LoC.v_pid)
+    #controlsState.vCruise = float(self.v_cruise_kph)
+    #controlsState.upAccelCmd = float(self.LoC.pid.p)
+    #controlsState.uiAccelCmd = float(self.LoC.pid.i)
+    #controlsState.ufAccelCmd = float(self.LoC.pid.f)
+    controlsState.angleSteersDes = 1
+    controlsState.vTargetLead = 1
+    controlsState.aTarget = 2
+    #controlsState.jerkFactor = float(self.sm['plan'].jerkFactor)
+    #controlsState.gpsPlannerActive = self.sm['plan'].gpsPlannerActive
+    #controlsState.vCurvature = self.sm['plan'].vCurvature
+    #controlsState.decelForModel = self.sm['plan'].longitudinalPlanSource == LongitudinalPlanSource.model
+    #controlsState.cumLagMs = -self.rk.remaining * 1000.
+    #controlsState.startMonoTime = int(start_time * 1e9)
+    #controlsState.mapValid = self.sm['plan'].mapValid
+    #controlsState.forceDecel = bool(force_decel)
+    ##controlsState.canErrorCounter = self.can_error_counter
+    #controlsState.alertTextMsg1 = str(trace1.global_alertTextMsg1)
+    #controlsState.alertTextMsg2 = str(trace1.global_alertTextMsg2)
+
+    self.pm.send('controlsState', dat)
+
   def test_conflate(self):
     context = messaging.Context()
 
@@ -138,5 +186,10 @@ class TestPoller(unittest.TestCase):
     context.term()
 
 
+
+
+
 if __name__ == "__main__":
-  unittest.main()
+  msg = TestPoller
+  msg.test_msg()
+  #unittest.main()
