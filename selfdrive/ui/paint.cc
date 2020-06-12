@@ -860,9 +860,40 @@ static void ui_draw_vision_speedlimit(UIState *s) {
   } else {
     ui_draw_text(s->vg, text_x, viz_speedlim_y + (is_speedlim_valid ? 170 : 165), "N/A", 42*2.3, color, s->font_sans_semibold);
   }
+}
 
+
+static void ui_draw_debug(UIState *s) 
+{
+  const UIScene *scene = &s->scene;
+  int ui_viz_rx = scene->ui_viz_rx;
+  int ui_viz_rw = scene->ui_viz_rw;
+
+
+  const int viz_speed_w = 280;
+  const int viz_speed_x = ui_viz_rx+((ui_viz_rw/2)-(viz_speed_w/2));
+
+  char speed_str[512];
+
+  int  y_pos = 0;
+  int  x_pos = 0;
+
+  x_pos = ui_viz_rx + 300;
+  y_pos = 150; 
+  
+
+
+  nvgTextAlign(s->vg, NVG_ALIGN_LEFT | NVG_ALIGN_BASELINE);
+  nvgFontSize(s->vg, 36*1.5*fFontSize);
+
+  snprintf(speed_str, sizeof(speed_str), "%s", scene->alert.text1 );
+  nvgText(s->vg, 0, 1020, speed_str, NULL);  
+
+  snprintf(speed_str, sizeof(speed_str), "%s", scene->alert.text2 );
+  nvgText(s->vg, 0, 1078, speed_str, NULL);
 
 }
+
 
 static void ui_draw_vision_speed(UIState *s) {
   const UIScene *scene = &s->scene;
@@ -881,6 +912,8 @@ static void ui_draw_vision_speed(UIState *s) {
   snprintf(speed_str, sizeof(speed_str), "%d", (int)speed);
   ui_draw_text(s->vg, viz_speed_x + viz_speed_w / 2, 240, speed_str, 96*2.5, COLOR_WHITE, s->font_sans_bold);
   ui_draw_text(s->vg, viz_speed_x + viz_speed_w / 2, 320, s->is_metric?"km/h":"mph", 36*2.5, COLOR_WHITE_ALPHA(200), s->font_sans_regular);
+
+  ui_draw_debug( s );
 }
 
 static void ui_draw_vision_event(UIState *s) {
