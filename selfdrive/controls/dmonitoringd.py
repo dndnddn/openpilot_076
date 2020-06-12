@@ -59,6 +59,8 @@ def dmonitoringd_thread(sm=None, pm=None):
                         sm['carState'].steeringPressed
       if driver_engaged:
         driver_status.update(Events(), True, sm['carState'].cruiseState.enabled, sm['carState'].standstill)
+        driver_status.terminal_alert_cnt = 0
+        driver_status.terminal_time = 0
       v_cruise_last = v_cruise
 
     # Get model meta
