@@ -11,7 +11,16 @@ class CarState(CarStateBase):
   def __init__(self, CP):
     super().__init__(CP)
 
+    self.cruise_main_button = False
+    self.prev_cruise_main_button = False
+    self.cruise_buttons = False
+
+    self.lkas_button_on = True    
+
   def update(self, cp, cp_cam):
+
+    self.prev_cruise_main_button = self.cruise_main_button
+
     ret = car.CarState.new_message()
 
     ret.doorOpen = any([cp.vl["CGW1"]['CF_Gway_DrvDrSw'], cp.vl["CGW1"]['CF_Gway_AstDrSw'],
@@ -39,29 +48,23 @@ class CarState(CarStateBase):
     ret.steerWarning = cp.vl["MDPS12"]['CF_Mdps_ToiUnavail'] != 0
 
 
-    self.main_on = (cp.vl["SCC11"]["MainMode_ACC"] != 0) #if not self.no_radar else cp.vl['EMS16']['CRUISE_LAMP_M']
-    self.acc_active = (cp.vl["SCC12"]['ACCMode'] != 0) #if not self.no_radar else (cp.vl["LVR12"]['CF_Lvr_CruiseSet'] != 0)
-
-
     # cruise state
-    ret.cruiseState.available = bool(self.main_on)
-    ret.cruiseState.enabled =  bool(self.main_on)
-    
-
     #ret.cruiseState.available = True
     #ret.cruiseState.enabled = cp.vl["SCC12"]['ACCMode'] != 0
-    #ret.cruiseState.available = (cp.vl["SCC11"]["MainMode_ACC"] != 0)
-    #ret.cruiseState.enabled = (cp.vl["SCC12"]['ACCMode'] != 0)
-
+    ret.cruiseState.available = (cp.vl["SCC11"]["MainMode_ACC"] != 0)
+    ret.cruiseState.enabled = (cp.vl["SCC12"]['ACCMode'] != 0)
     ret.cruiseState.standstill = cp.vl["SCC11"]['SCCInfoDisplay'] == 4.
 
-    #if ret.cruiseState.enabled:
-    if self.acc_active != 0:
+
+    if ret.cruiseState.enabled:
       is_set_speed_in_mph = int(cp.vl["CLU11"]["CF_Clu_SPEED_UNIT"])
       speed_conv = CV.MPH_TO_MS if is_set_speed_in_mph else CV.KPH_TO_MS
       ret.cruiseState.speed = cp.vl["SCC11"]['VSetDis'] * speed_conv
     else:
       ret.cruiseState.speed = 0
+
+    self.cruise_main_button = cp.vl["CLU11"]["CF_Clu_CruiseSwMain"]
+    self.cruise_buttons = cp.vl["CLU11"]["CF_Clu_CruiseSwState"]      
 
     # TODO: Find brake pressure
     ret.brake = 0
@@ -124,6 +127,12 @@ class CarState(CarStateBase):
         ret.gearShifter = GearShifter.reverse
       else:
         ret.gearShifter = GearShifter.unknown
+
+
+    self.lkas_error = cp_cam.vl["LKAS11"]["CF_Lkas_LdwsSysState"] == 7
+    if not self.lkas_error:
+      self.lkas_button_on = cp_cam.vl["LKAS11"]["CF_Lkas_LdwsSysState"]    
+
 
     # save the entire LKAS11 and CLU11
     self.lkas11 = cp_cam.vl["LKAS11"]

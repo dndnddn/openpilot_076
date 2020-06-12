@@ -60,6 +60,7 @@ class CarController():
     if CS.out.vEgo < 16.7 and self.car_fingerprint == CAR.HYUNDAI_GENESIS:
       lkas_active = 0
 
+
     if not lkas_active:
       apply_steer = 0
 
@@ -75,11 +76,10 @@ class CarController():
                                    left_lane, right_lane,
                                    left_lane_warning, right_lane_warning))
 
-    #can_sends.append(create_mdps12(self.packer, frame, CS.mdps12))
+    can_sends.append(create_mdps12(self.packer, frame, CS.mdps12))
 
     
-    
-    str_log1 = 'cruiseState={:.0f}/{:.0f} '.format( CS.out.cruiseState.available, CS.out.cruiseState.enabled  )
+    str_log1 = 'cruiseState={:.0f}/{:.0f} lkas={}'.format( CS.out.cruiseState.available, CS.out.cruiseState.enabled, self.lkas_button_on  )
     str_log2 = ' brake{:.0f}/{:.0f}  pcm_cancel={} '.format(  CS.out.brakePressed,  CS.out.brakeLights, pcm_cancel_cmd  )
     trace1.printf( '{} {}'.format( str_log1, str_log2 ) )
 

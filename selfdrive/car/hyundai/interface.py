@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 from cereal import car
 from selfdrive.config import Conversions as CV
-from selfdrive.car.hyundai.values import Ecu, ECU_FINGERPRINT, CAR, FINGERPRINTS
+from selfdrive.car.hyundai.values import Ecu, ECU_FINGERPRINT, CAR, FINGERPRINTS, Buttons
 from selfdrive.car import STD_CARGO_KG, scale_rot_inertia, scale_tire_stiffness, is_ecu_disconnected, gen_empty_fingerprint
 from selfdrive.car.interfaces import CarInterfaceBase
 
+
+ButtonType = car.CarState.ButtonEvent.Type
 class CarInterface(CarInterfaceBase):
 
   @staticmethod
@@ -112,12 +114,25 @@ class CarInterface(CarInterfaceBase):
       ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0.], [0.]]
       ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.25], [0.05]]
     elif candidate == CAR.KIA_STINGER:
-      ret.lateralTuning.pid.kf = 0.00005
-      ret.mass = 1825. + STD_CARGO_KG
-      ret.wheelbase = 2.78
-      ret.steerRatio = 14.4 * 1.15   # 15% higher at the center seems reasonable
-      ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0.], [0.]]
-      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.25], [0.05]]
+      #ret.lateralTuning.pid.kf = 0.00005
+      #ret.mass = 1825. + STD_CARGO_KG
+      #ret.wheelbase = 2.78
+      #ret.steerRatio = 14.4 * 1.15   # 15% higher at the center seems reasonable
+      #ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0.], [0.]]
+      #ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.25], [0.05]]
+
+      ret.lateralTuning.init('indi')
+      ret.lateralTuning.indi.innerLoopGain = 3.0
+      ret.lateralTuning.indi.outerLoopGain = 2.0
+      ret.lateralTuning.indi.timeConstant = 1.0
+      ret.lateralTuning.indi.actuatorEffectiveness = 1.5
+      ret.steerActuatorDelay = 0.08 # Stinger GT Limited AWD 3.3T stock value (Tunder's 2020) 
+      ret.steerLimitTimer = 0.4 # stock is 0.01 but 0.04 seems to work well
+      tire_stiffness_factor = 1.125 # LiveParameters (Tunder's 2020)
+      ret.steerRateCost = 1.0
+      ret.mass = 1825.0 + STD_CARGO_KG
+      ret.wheelbase = 2.906 # https://www.kia.com/us/en/stinger/specs
+      ret.steerRatio = 13.56   # 10.28 measured by wheel alignment machine/reported steering angle by OP. 2020 GT Limited AWD has a variable steering ratio ultimately ending in 10.28.  13.56 after 1200km in LiveParamaters (Tunder)
     elif candidate == CAR.KONA:
       ret.lateralTuning.pid.kf = 0.00006
       ret.mass = 1275. + STD_CARGO_KG
@@ -165,8 +180,35 @@ class CarInterface(CarInterfaceBase):
     ret = self.CS.update(self.cp, self.cp_cam)
     ret.canValid = self.cp.can_valid and self.cp_cam.can_valid
 
+
+    # most HKG cars has no long control, it is safer and easier to engage by main on
+    ret.cruiseState.enabled = ret.cruiseState.available #if not self.CC.longcontrol else ret.cruiseState.enabled
+
     # TODO: button presses
-    ret.buttonEvents = []
+    buttonEvents = []
+    if self.CS.cruise_buttons != self.CS.prev_cruise_buttons:
+      be = car.CarState.ButtonEvent.new_message()
+      be.type = ButtonType.unknown
+      if self.CS.cruise_buttons != 0:
+        be.pressed = True
+        but = self.CS.cruise_buttons
+      else:
+        be.pressed = False
+        but = self.CS.prev_cruise_buttons
+      if but == Buttons.RES_ACCEL:
+        be.type = ButtonType.accelCruise
+      elif but == Buttons.SET_DECEL:
+        be.type = ButtonType.decelCruise
+      elif but == Buttons.CANCEL:
+        be.type = ButtonType.cancel
+      buttonEvents.append(be)
+    if self.CS.cruise_main_button != self.CS.prev_cruise_main_button:
+      be = car.CarState.ButtonEvent.new_message()
+      be.type = ButtonType.altButton3
+      be.pressed = bool(self.CS.cruise_main_button)
+      buttonEvents.append(be)
+    ret.buttonEvents = buttonEvents
+    #ret.buttonEvents = []    
 
     events = self.create_common_events(ret)
     #TODO: addd abs(self.CS.angle_steers) > 90 to 'steerTempUnavailable' event
