@@ -191,5 +191,5 @@ class TestPoller(unittest.TestCase):
 
 if __name__ == "__main__":
   msg = TestPoller
-  msg.test_msg()
+  msg.test_multiple_messages()
   #unittest.main()
