@@ -129,16 +129,11 @@ class CarInterfaceBase():
     #    events.add(EventName.pcmDisable)
     event_len = events.__len__()
     cruiseState_enabled = cs_out.cruiseState.enabled
-    if cruiseState_enabled and event_len > 0:
-      cruiseState_enabled = False 
-
-
-    
+   
 
     if pcm_enable:
       if cruiseState_enabled != self.cruise_enabled_prev:
-        print( 'cruiseState_enabled={}  event_len={}'.format(  cruiseState_enabled, event_len ) )
-        if cruiseState_enabled:
+        if cruiseState_enabled and event_len <= 0:
           events.add(EventName.pcmEnable)
         else:
           events.add(EventName.pcmDisable)
