@@ -44,8 +44,8 @@ class CarState(CarStateBase):
 
 
     # cruise state
-    ret.cruiseState.available = bool(self.CS.main_on)
-    ret.cruiseState.enabled =  bool(self.CS.main_on)
+    ret.cruiseState.available = bool(self.main_on)
+    ret.cruiseState.enabled =  bool(self.main_on)
     
 
     #ret.cruiseState.available = True
