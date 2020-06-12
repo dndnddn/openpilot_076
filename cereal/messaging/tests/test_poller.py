@@ -164,6 +164,8 @@ class TestPoller(unittest.TestCase):
     #controlsState.alertTextMsg1 = str(trace1.global_alertTextMsg1)
     #controlsState.alertTextMsg2 = str(trace1.global_alertTextMsg2)
 
+    self.pm = messaging.PubMaster(['sendcan', 'controlsState', 'carState', \
+                                     'carControl', 'carEvents', 'carParams'])
     self.pm.send('controlsState', dat)
 
   def test_conflate(self):
