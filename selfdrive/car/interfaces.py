@@ -88,6 +88,7 @@ class CarInterfaceBase():
   def create_common_events(self, cs_out, extra_gears=[], gas_resume_speed=-1, pcm_enable=True):
     events = Events()
 
+    events_msg = False
     if cs_out.doorOpen:
       events.add(EventName.doorOpen)
     elif cs_out.seatbeltUnlatched:
@@ -106,8 +107,10 @@ class CarInterfaceBase():
       events.add(EventName.stockFcw)
     elif cs_out.stockAeb:
       events.add(EventName.stockAeb)
-    if cs_out.vEgo > MAX_CTRL_SPEED:
+    elif cs_out.vEgo > MAX_CTRL_SPEED:
       events.add(EventName.speedTooHigh)
+    else:
+      events_msg = True
 
     if cs_out.steerError:
       events.add(EventName.steerUnavailable)
@@ -129,11 +132,8 @@ class CarInterfaceBase():
     #  elif not cs_out.cruiseState.enabled:
     #    events.add(EventName.pcmDisable)
 
-    print( 'events = {}'.format( len(events) ) )
 
-    if events != None:
-      self.cruise_enabled_prev = False
-    elif pcm_enable:
+    if pcm_enable and events_msg:
       if cs_out.cruiseState.enabled != self.cruise_enabled_prev:
         if cs_out.cruiseState.enabled:
           events.add(EventName.pcmEnable)
