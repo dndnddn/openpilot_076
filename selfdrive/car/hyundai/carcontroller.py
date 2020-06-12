@@ -80,7 +80,7 @@ class CarController():
     
     
     str_log1 = 'cruiseState={:.0f}/{:.0f} '.format( CS.out.cruiseState.available, CS.out.cruiseState.enabled  )
-    str_log2 = ' brake{:.0f}/{:.0f} '.format(  CS.out.brakePressed,  CS.out.brakeLights  )
+    str_log2 = ' brake{:.0f}/{:.0f}  pcm_cancel={} '.format(  CS.out.brakePressed,  CS.out.brakeLights, pcm_cancel_cmd  )
     trace1.printf( '{} {}'.format( str_log1, str_log2 ) )
         
 
