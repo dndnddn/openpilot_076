@@ -4,6 +4,8 @@ from selfdrive.car.hyundai.hyundaican import create_lkas11, create_clu11, create
 from selfdrive.car.hyundai.values import Buttons, SteerLimitParams, CAR
 from opendbc.can.packer import CANPacker
 
+import common.log as trace1
+
 VisualAlert = car.CarControl.HUDControl.VisualAlert
 
 
@@ -74,6 +76,13 @@ class CarController():
                                    left_lane_warning, right_lane_warning))
 
     can_sends.append(create_mdps12(self.packer, frame, CS.mdps12))
+
+    
+    
+    str_log1 = 'cruiseState={:.0f}/{:.0f} '.format( CS.out.cruiseState.available, CS.out.cruiseState.enabled  )
+    str_log2 = ' brake{:.0f}/{:.0f} '.format(  CS.out.brakePressed,  CS.out.brakeLights  )
+    trace1.printf( '{} {}'.format( str_log1, str_log2 ) )
+        
 
     if pcm_cancel_cmd:
       can_sends.append(create_clu11(self.packer, frame, CS.clu11, Buttons.CANCEL))
