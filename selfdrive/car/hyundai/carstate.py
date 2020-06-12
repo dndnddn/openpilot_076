@@ -13,7 +13,7 @@ class CarState(CarStateBase):
 
     self.cruise_main_button = False
     self.cruise_buttons = False
-    self.lkas_button_on = True    
+    self.lkas_button_on = False    
 
     self.prev_cruise_main_button = False
     self.prev_cruise_buttons = False

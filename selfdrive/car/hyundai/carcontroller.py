@@ -45,6 +45,7 @@ class CarController():
     self.resume_cnt = 0
     self.last_resume_frame = 0
     self.last_lead_distance = 0
+    self.longcontrol = False
 
   def update(self, enabled, CS, frame, actuators, pcm_cancel_cmd, visual_alert,
              left_lane, right_lane, left_lane_depart, right_lane_depart):
