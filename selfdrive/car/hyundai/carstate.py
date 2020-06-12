@@ -12,10 +12,12 @@ class CarState(CarStateBase):
     super().__init__(CP)
 
     self.cruise_main_button = False
-    self.prev_cruise_main_button = False
     self.cruise_buttons = False
-
     self.lkas_button_on = True    
+
+    self.prev_cruise_main_button = False
+    self.prev_cruise_buttons = False
+
 
   def update(self, cp, cp_cam):
 
