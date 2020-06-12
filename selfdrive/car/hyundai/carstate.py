@@ -18,6 +18,9 @@ class CarState(CarStateBase):
     self.prev_cruise_main_button = False
     self.prev_cruise_buttons = False
 
+    self.main_on = False
+    self.acc_active = False
+
 
   def update(self, cp, cp_cam):
 
@@ -53,8 +56,11 @@ class CarState(CarStateBase):
     # cruise state
     #ret.cruiseState.available = True
     #ret.cruiseState.enabled = cp.vl["SCC12"]['ACCMode'] != 0
-    ret.cruiseState.available = (cp.vl["SCC11"]["MainMode_ACC"] != 0)
-    ret.cruiseState.enabled = (cp.vl["SCC12"]['ACCMode'] != 0)
+    self.main_on = (cp.vl["SCC11"]["MainMode_ACC"] != 0)
+    self.acc_active = (cp.vl["SCC12"]['ACCMode'] != 0)
+
+    ret.cruiseState.available = self.main_on
+    ret.cruiseState.enabled = self.acc_active
     ret.cruiseState.standstill = cp.vl["SCC11"]['SCCInfoDisplay'] == 4.
 
 

@@ -336,7 +336,7 @@ def thermald_thread():
     panda_signature = params.get("PandaFirmware")
     fw_version_match = (panda_signature is None) or (panda_signature == FW_SIGNATURE)   # don't show alert is no panda is connected (None)
 
-    #ignition = True  #  영상보기.
+    ignition = True  #  영상보기.
 
     should_start = ignition
 
@@ -418,7 +418,8 @@ def thermald_thread():
     fw_version_match_prev = fw_version_match
     should_start_prev = should_start
 
-    pm.charging_ctrl( msg, ts, 80, 70 )
+    if usb_power:
+      pm.charging_ctrl( msg, ts, 80, 70 )
 
     # report to server once per minute
     if (count % int(60. / DT_TRML)) == 0:
