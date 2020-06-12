@@ -130,7 +130,7 @@ class TestPoller(unittest.TestCase):
     controlsState.alertBlinkingRate = 2
     #controlsState.alertType = 1
     controlsState.alertSound = 1
-    controlsState.driverMonitoringOn = 0 #self.sm['dMonitoringState'].faceDetected
+    #controlsState.driverMonitoringOn = 0 #self.sm['dMonitoringState'].faceDetected
     #controlsState.canMonoTimes = list(CS.canMonoTimes)
     #controlsState.planMonoTime = self.sm.logMonoTime['plan']
     #controlsState.pathPlanMonoTime = self.sm.logMonoTime['pathPlan']
