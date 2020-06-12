@@ -88,30 +88,26 @@ class CarInterfaceBase():
   def create_common_events(self, cs_out, extra_gears=[], gas_resume_speed=-1, pcm_enable=True):
     events = Events()
 
-    events_msg = False
     if cs_out.doorOpen:
       events.add(EventName.doorOpen)
-    elif cs_out.seatbeltUnlatched:
+    if cs_out.seatbeltUnlatched:
       events.add(EventName.seatbeltNotLatched)
-    elif cs_out.gearShifter != GearShifter.drive and cs_out.gearShifter not in extra_gears:
+    if cs_out.gearShifter != GearShifter.drive and cs_out.gearShifter not in extra_gears:
       events.add(EventName.wrongGear)
-    elif cs_out.gearShifter == GearShifter.reverse:
+    if cs_out.gearShifter == GearShifter.reverse:
       events.add(EventName.reverseGear)
-    elif not cs_out.cruiseState.available:
+    if not cs_out.cruiseState.available:
       events.add(EventName.wrongCarMode)
-    elif cs_out.espDisabled:
+    if cs_out.espDisabled:
       events.add(EventName.espDisabled)
-    elif cs_out.gasPressed:
+    if cs_out.gasPressed:
       events.add(EventName.gasPressed)
-    elif cs_out.stockFcw:
+    if cs_out.stockFcw:
       events.add(EventName.stockFcw)
-    elif cs_out.stockAeb:
+    if cs_out.stockAeb:
       events.add(EventName.stockAeb)
-    elif cs_out.vEgo > MAX_CTRL_SPEED:
+    if cs_out.vEgo > MAX_CTRL_SPEED:
       events.add(EventName.speedTooHigh)
-    else:
-      events_msg = True
-
     if cs_out.steerError:
       events.add(EventName.steerUnavailable)
     elif cs_out.steerWarning:
@@ -136,12 +132,12 @@ class CarInterfaceBase():
     #if cruiseState_enabled:
     #   cruiseState_enabled = events_msg
 
-    nevent_len = events.__len__()
+    event_len = events.__len__()
     
 
     if pcm_enable:
       if cruiseState_enabled != self.cruise_enabled_prev:
-        print( 'cruiseState_enabled={}  events_msg={} nevent_len={}'.format(  cruiseState_enabled, events_msg, nevent_len ) )
+        print( 'cruiseState_enabled={}  event_len={}'.format(  cruiseState_enabled, event_len ) )
         if cruiseState_enabled:
           events.add(EventName.pcmEnable)
         else:
