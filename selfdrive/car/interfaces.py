@@ -122,22 +122,20 @@ class CarInterfaceBase():
         events.add(EventName.pedalPressed)
 
     # we engage when pcm is active (rising edge)
-    #if pcm_enable:
-    #  if cs_out.cruiseState.enabled and not self.CS.out.cruiseState.enabled:
-    #    events.add(EventName.pcmEnable)
-    #  elif not cs_out.cruiseState.enabled:
-    #    events.add(EventName.pcmDisable)
-    event_len = events.__len__()
-    cruiseState_enabled = cs_out.cruiseState.enabled
-   
-
     if pcm_enable:
-      if cruiseState_enabled != self.cruise_enabled_prev:
-        if cruiseState_enabled and event_len <= 0:
-          events.add(EventName.pcmEnable)
-        else:
-          events.add(EventName.pcmDisable)
-        self.cruise_enabled_prev = cruiseState_enabled
+      if cs_out.cruiseState.enabled and not self.CS.out.cruiseState.enabled:
+        events.add(EventName.pcmEnable)
+      elif not cs_out.cruiseState.enabled:
+        events.add(EventName.pcmDisable)
+  
+
+    #if pcm_enable:
+    #  if cs_out.cruiseState.enabled != self.cruise_enabled_prev:
+    #    if cs_out.cruiseState.enabled and event_len <= 0:
+    #      events.add(EventName.pcmEnable)
+    #    else:
+    #      events.add(EventName.pcmDisable)
+    #    self.cruise_enabled_prev = cs_out.cruiseState.enabled
 
 
     return events
