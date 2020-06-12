@@ -75,7 +75,7 @@ class CarController():
                                    left_lane, right_lane,
                                    left_lane_warning, right_lane_warning))
 
-    can_sends.append(create_mdps12(self.packer, frame, CS.mdps12))
+    #can_sends.append(create_mdps12(self.packer, frame, CS.mdps12))
 
     
     
