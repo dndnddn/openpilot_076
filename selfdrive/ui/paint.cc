@@ -866,8 +866,8 @@ static void ui_draw_vision_speedlimit(UIState *s) {
 static void ui_draw_debug(UIState *s) 
 {
   UIScene &scene = s->scene;
-  int ui_viz_rx = scene->ui_viz_rx;
-  int ui_viz_rw = scene->ui_viz_rw;
+  int ui_viz_rx = scene.ui_viz_rx;
+  int ui_viz_rw = scene.ui_viz_rw;
 
 
   const int viz_speed_w = 280;
