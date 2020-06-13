@@ -114,7 +114,7 @@ typedef struct UIScene {
   float speedlimit;
   bool speedlimit_valid;
   bool map_valid;
-  bool brakeLights;
+
   
   float curvature;
   int engaged;
