@@ -564,7 +564,7 @@ EVENTS = {
   },
 
   EventName.seatbeltNotLatched: {
-    ET.SOFT_DISABLE: SoftDisableAlert("Seatbelt Unlatched"),
+    ET.USER_DISABLE: EngagementAlert(AudibleAlert.chimeDisengage), #ET.SOFT_DISABLE: SoftDisableAlert("Seatbelt Unlatched"),
     ET.NO_ENTRY: NoEntryAlert("Seatbelt unlatched"),
   },
 
