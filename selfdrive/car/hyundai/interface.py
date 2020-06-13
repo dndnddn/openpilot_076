@@ -3,7 +3,7 @@ from cereal import car
 from selfdrive.config import Conversions as CV
 from selfdrive.car.hyundai.values import Ecu, ECU_FINGERPRINT, CAR, FINGERPRINTS, Buttons
 from selfdrive.car import STD_CARGO_KG, scale_rot_inertia, scale_tire_stiffness, is_ecu_disconnected, gen_empty_fingerprint
-from selfdrive.car.interfaces import CarInterfaceBase
+from selfdrive.car.interfaces import CarInterfaceBase, MAX_CTRL_SPEED
 
 EventName = car.CarEvent.EventName
 ButtonType = car.CarState.ButtonEvent.Type
@@ -67,7 +67,7 @@ class CarInterface(CarInterfaceBase):
       ret.steerRatio = 12.5  #12.5
       ret.steerRateCost = 0.4 #0.4
       ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[9., 22.], [9., 22.]]
-      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.18, 0.20], [0.02, 0.04]]
+      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.10, 0.20], [0.01, 0.04]]
     elif candidate == CAR.KIA_SORENTO:
       ret.lateralTuning.pid.kf = 0.00005
       ret.mass = 1985. + STD_CARGO_KG
@@ -208,11 +208,18 @@ class CarInterface(CarInterfaceBase):
     #ret.buttonEvents = []    
 
     events = self.create_common_events(ret)
-    if not self.CS.lkas_button_on:
-      events.add( EventName.lkasButtonOff )
-    elif self.CC.steer_torque_over_timer:
-      events.add( EventName.steerTorqueOver )
 
+    if self.cruise_enabled_prev:
+      if not self.CS.lkas_button_on:
+        events.add( EventName.lkasButtonOff )
+      elif self.CC.steer_torque_over_timer:
+        events.add( EventName.steerTorqueOver )
+      elif ret.vEgo > MAX_CTRL_SPEED:
+        events.add( EventName.speedTooHigh )
+      elif ret.steerError:
+        events.add( EventName.steerUnavailable )
+      elif ret.steerWarning:
+        events.add( EventName.steerTempUnavailable )
 
     #TODO: addd abs(self.CS.angle_steers) > 90 to 'steerTempUnavailable' event
 

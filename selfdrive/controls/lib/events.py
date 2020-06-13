@@ -444,16 +444,16 @@ EVENTS = {
     ET.WARNING: Alert(
       "lkasButtonOff",
       "LKAS button off",
-      AlertStatus.userPrompt, AlertSize.small,
+      AlertStatus.userPrompt, AlertSize.mid,
       Priority.LOW, VisualAlert.none, AudibleAlert.none, 0., 0., .1),
   },
 
   EventName.steerTorqueOver: {
     ET.WARNING: Alert(
-      "steerTorqueOver",
       "운전자 핸들 조향",
-      AlertStatus.userPrompt, AlertSize.small,
-      Priority.LOW, VisualAlert.none, AudibleAlert.none, 0., 0., .1),
+      "자동 조향 일시 중지",
+      AlertStatus.userPrompt, AlertSize.mid,
+      Priority.LOW, VisualAlert.steerRequired, AudibleAlert.chimePrompt, 0., 0., .1),
   },
   
   # ********** events that affect controls state transitions **********

@@ -136,13 +136,7 @@ class CarInterfaceBase():
       self.cruise_enabled_prev = cs_out.cruiseState.enabled
 
 
-    if self.cruise_enabled_prev:
-      if cs_out.vEgo > MAX_CTRL_SPEED:
-        events.add( EventName.speedTooHigh )
-      elif cs_out.steerError:
-        events.add( EventName.steerUnavailable )
-      elif cs_out.steerWarning:
-        events.add( EventName.steerTempUnavailable )
+
 
     return events
 
