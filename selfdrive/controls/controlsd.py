@@ -441,7 +441,7 @@ class Controls:
     self.AM.process_alerts(self.sm.frame)
     CC.hudControl.visualAlert = self.AM.visual_alert
 
-    if not self.hyundai_lkas:
+    if not self.hyundai_lkas and  self.enabled:
       # send car controls over can
       can_sends = self.CI.apply(CC)
       self.pm.send('sendcan', can_list_to_can_capnp(can_sends, msgtype='sendcan', valid=CS.canValid))
@@ -562,9 +562,8 @@ class Controls:
     self.prof.checkpoint("State Control")
 
     # Publish data
-    if self.enabled:
-      self.publish_logs(CS, start_time, actuators, v_acc, a_acc, lac_log)
-      self.prof.checkpoint("Sent")
+    self.publish_logs(CS, start_time, actuators, v_acc, a_acc, lac_log)
+    self.prof.checkpoint("Sent")
 
     if not CS.cruiseState.enabled and not self.hyundai_lkas:
       self.hyundai_lkas = True
