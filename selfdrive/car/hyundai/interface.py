@@ -65,7 +65,7 @@ class CarInterface(CarInterfaceBase):
       ret.wheelbase = 2.845
       #ret.steerRatio = 13.27 * 1.15   # 15% higher at the center seems reasonable
       ret.steerRatio = 12.5  #12.5
-      ret.steerRateCost = 0.01 #0.4
+      ret.steerRateCost = 0.5 #0.4
       ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[9., 22.], [9., 22.]]
       ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.10, 0.20], [0.01, 0.04]]
     elif candidate == CAR.KIA_SORENTO:
