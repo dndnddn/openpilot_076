@@ -559,7 +559,7 @@ EVENTS = {
   },
 
   EventName.doorOpen: {
-    ET.SOFT_DISABLE: SoftDisableAlert("Door Open"),
+    ET.USER_DISABLE: EngagementAlert(AudibleAlert.chimeDisengage), #ET.SOFT_DISABLE: SoftDisableAlert("Door Open"),
     ET.NO_ENTRY: NoEntryAlert("Door open"),
   },
 
