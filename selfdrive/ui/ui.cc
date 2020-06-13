@@ -500,7 +500,7 @@ void handle_message(UIState *s, SubMaster &sm) {
 
     scene.leftBlinker = data.getLeftBlinker();
     scene.rightBlinker = data.getRightBlinker();
-    scene.getGearShifter = data.getGearShifter()
+    scene.getGearShifter = data.getGearShifter();
   }  
 
   s->started = s->thermal_started || s->preview_started ;
