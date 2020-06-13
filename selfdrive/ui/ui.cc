@@ -914,6 +914,8 @@ int main(int argc, char* argv[]) {
     int touched = touch_poll(&touch, &touch_x, &touch_y, 0);
     if (touched == 1) {
       set_awake(s, true);
+
+      printf( "touch x:%d,  y:%d \n", touch_x, touch_y );
       handle_sidebar_touch(s, touch_x, touch_y);
       handle_vision_touch(s, touch_x, touch_y);
     }

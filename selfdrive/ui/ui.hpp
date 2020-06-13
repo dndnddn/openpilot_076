@@ -149,6 +149,8 @@ typedef struct UIScene {
 
   float awareness_status;
 
+  bool recording;
+
   // Used to show gps planner status
   bool gps_planner_active;
 
