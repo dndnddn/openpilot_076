@@ -88,7 +88,7 @@ class CarController():
     can_sends.append(create_mdps12(self.packer, frame, CS.mdps12))
 
     
-    str_log1 = 'cruiseState={:.0f}/{:.0f} lkas={}'.format( CS.out.cruiseState.available, CS.out.cruiseState.enabled, CS.lkas_button_on  )
+    str_log1 = 'cruiseState={:.0f}/{:.0f}/{:.0f} lkas={}'.format( CS.out.cruiseState.available, CS.out.cruiseState.enabled, CS.cruise_engaged_on, CS.lkas_button_on  )
     str_log2 = ' brake{:.0f}/{:.0f}  pcm_cancel={} '.format(  CS.out.brakePressed,  CS.out.brakeLights, pcm_cancel_cmd  )
     trace1.printf( '{} {}'.format( str_log1, str_log2 ) )
 
