@@ -29,7 +29,24 @@ class CarInterface(CarInterfaceBase):
     ret.steerLimitTimer = 0.4
     tire_stiffness_factor = 1.
 
-    if candidate == CAR.SANTA_FE:
+
+    if candidate == CAR.GRANDEUR_HYBRID:
+      ret.mass = 1675. + STD_CARGO_KG
+      ret.wheelbase = 2.845
+
+      #ret.steerRatio = 12.5  #12.5
+      #ret.steerRateCost = 0.5 #0.4
+      #ret.lateralTuning.pid.kf = 0.00003 
+      #ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[9., 22.], [9., 22.]]
+      #ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.10, 0.20], [0.01, 0.04]]
+
+      ret.steerRatio = 10.5  #12.5
+      ret.steerRateCost = 0.01 #0.4
+      ret.lateralTuning.pid.kf = 0.00001
+      ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[9., 22.], [9., 22.]]
+      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.13, 0.14], [0.04, 0.05]]
+
+    elif candidate == CAR.SANTA_FE:
       ret.lateralTuning.pid.kf = 0.00005
       ret.mass = 3982. * CV.LB_TO_KG + STD_CARGO_KG
       ret.wheelbase = 2.766
@@ -59,15 +76,6 @@ class CarInterface(CarInterfaceBase):
       ret.steerRatio = 13.75 * 1.15
       ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0.], [0.]]
       ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.25], [0.05]]
-    elif candidate == CAR.GRANDEUR_HYBRID:
-      ret.lateralTuning.pid.kf = 0.00003
-      ret.mass = 1675. + STD_CARGO_KG
-      ret.wheelbase = 2.845
-      #ret.steerRatio = 13.27 * 1.15   # 15% higher at the center seems reasonable
-      ret.steerRatio = 12.5  #12.5
-      ret.steerRateCost = 0.5 #0.4
-      ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[9., 22.], [9., 22.]]
-      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.10, 0.20], [0.01, 0.04]]
     elif candidate == CAR.KIA_SORENTO:
       ret.lateralTuning.pid.kf = 0.00005
       ret.mass = 1985. + STD_CARGO_KG
@@ -236,9 +244,12 @@ class CarInterface(CarInterfaceBase):
     self.CS.out = ret.as_reader()
     return self.CS.out
 
-  def apply(self, c):
-    can_sends = self.CC.update(c.enabled, self.CS, self.frame, c.actuators,
-                               c.cruiseControl.cancel, c.hudControl.visualAlert, c.hudControl.leftLaneVisible,
-                               c.hudControl.rightLaneVisible, c.hudControl.leftLaneDepart, c.hudControl.rightLaneDepart)
+  def apply(self, c, sm, LaC):
+    #can_sends = self.CC.update(c.enabled, self.CS, self.frame, c.actuators,
+    #                           c.cruiseControl.cancel, c.hudControl.visualAlert, c.hudControl.leftLaneVisible,
+    #                           c.hudControl.rightLaneVisible, c.hudControl.leftLaneDepart, c.hudControl.rightLaneDepart)
+
+    can_sends = self.CC.update(c, self.CS, self.frame, sm, LaC )
+
     self.frame += 1
     return can_sends

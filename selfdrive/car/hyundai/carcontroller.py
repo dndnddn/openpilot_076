@@ -1,4 +1,4 @@
-from cereal import car
+from cereal import car, log
 from selfdrive.car import apply_std_steer_torque_limits
 from selfdrive.car.hyundai.hyundaican import create_lkas11, create_clu11, create_lfa_mfa, create_mdps12
 from selfdrive.car.hyundai.values import Buttons, SteerLimitParams, CAR
@@ -7,33 +7,9 @@ from selfdrive.config import Conversions as CV
 import common.log as trace1
 
 VisualAlert = car.CarControl.HUDControl.VisualAlert
+LaneChangeState = log.PathPlan.LaneChangeState
 
 
-def process_hud_alert(enabled, fingerprint, visual_alert, left_lane,
-                      right_lane, left_lane_depart, right_lane_depart):
-  sys_warning = (visual_alert == VisualAlert.steerRequired)
-
-  # initialize to no line visible
-  sys_state = 1
-  if left_lane and right_lane or sys_warning:  # HUD alert only display when LKAS status is active
-    if enabled or sys_warning:
-      sys_state = 3
-    else:
-      sys_state = 4
-  elif left_lane:
-    sys_state = 5
-  elif right_lane:
-    sys_state = 6
-
-  # initialize to no warnings
-  left_lane_warning = 0
-  right_lane_warning = 0
-  if left_lane_depart:
-    left_lane_warning = 1 if fingerprint in [CAR.GENESIS_G90, CAR.GENESIS_G80] else 2
-  if right_lane_depart:
-    right_lane_warning = 1 if fingerprint in [CAR.GENESIS_G90, CAR.GENESIS_G80] else 2
-
-  return sys_warning, sys_state, left_lane_warning, right_lane_warning
 
 
 class CarController():
@@ -49,10 +25,55 @@ class CarController():
     self.longcontrol = False
 
     self.steer_torque_over_timer = 0
-    self.turning_signal_timer = 0
 
-  def update(self, enabled, CS, frame, actuators, pcm_cancel_cmd, visual_alert,
-             left_lane, right_lane, left_lane_depart, right_lane_depart):
+
+    # hud
+    self.hud_timer_left = 0
+    self.hud_timer_right = 0
+
+
+  def process_hud_alert(self, enabled, visual_alert, left_lane, right_lane):
+    sys_warning = (visual_alert == VisualAlert.steerRequired)
+
+    if left_lane:
+      self.hud_timer_left = 100
+
+    if right_lane:
+      self.hud_timer_right = 100
+
+    if self.hud_timer_left:
+      self.hud_timer_left -= 1
+ 
+    if self.hud_timer_right:
+      self.hud_timer_right -= 1
+
+    # initialize to no line visible
+    sys_state = 1
+    if not self.lkas_button:
+      sys_state = 0
+    elif hud_timer_left and hud_timer_right or sys_warning:  # HUD alert only display when LKAS status is active
+      if enabled or sys_warning:
+        sys_state = 3
+      else:
+        sys_state = 4
+    elif hud_timer_left:
+      sys_state = 5
+    elif hud_timer_right:
+      sys_state = 6
+
+    return sys_warning, sys_state
+
+
+  def update(self, CC, CS, frame,  sm, LaC ):
+
+    enabled = CC.enabled
+    actuators = CC.actuators
+    pcm_cancel_cmd = CC.cruiseControl.cancel
+    visual_alert = CC.hudControl.visualAlert
+    left_lane = CC.hudControl.leftLaneVisible
+    right_lane = CC.hudControl.rightLaneVisible
+    path_plan = sm['pathPlan']
+
 
     abs_angle_steers =  abs(actuators.steerAngle)
     v_ego_kph = CS.out.vEgo * CV.MS_TO_KPH
@@ -74,24 +95,23 @@ class CarController():
       if self.lkas_button != CS.lkas_button_on:
          self.lkas_button = CS.lkas_button_on
 
-    # streer over check
-    if abs( CS.out.steeringTorque ) > 180:
-      self.steer_torque_over_timer = 200
 
+    # streer over check
+    if abs( CS.out.steeringTorque ) > 180:  #사용자 핸들 토크
+      self.steer_torque_over_timer = 200
+    elif CS.out.steerWarning:
+      self.steer_torque_over_timer = 10
 
     # Disable steering while turning blinker on and speed below 60 kph
-    if CS.out.leftBlinker or CS.out.rightBlinker:
-      self.steer_torque_over = False
-      self.turning_signal_timer = 500  # Disable for 5.0 Seconds after blinker turned off 
+    #if CS.out.leftBlinker or CS.out.rightBlinker:
 
-    if self.steer_torque_over_timer:
+    if path_plan.laneChangeState != LaneChangeState.off:
+      self.steer_torque_over_timer = 0
+    elif self.steer_torque_over_timer:
       self.steer_torque_over_timer -= 1
-
-    if self.turning_signal_timer:
-      self.turning_signal_timer -= 1       
-
+ 
     # disable if steer angle reach 90 deg, otherwise mdps fault in some models
-    lkas_active = enabled and abs(CS.out.steeringAngle) < 90. #and self.lkas_button
+    lkas_active = enabled and abs(CS.out.steeringAngle) < 100. #and self.lkas_button
 
     # fix for Genesis hard fault at low speed
     if CS.out.vEgo < 16.7 and self.car_fingerprint == CAR.HYUNDAI_GENESIS:
@@ -102,25 +122,21 @@ class CarController():
       lkas_active = 0
 
 
-
     if not lkas_active:
       apply_steer = 0
 
     self.apply_steer_last = apply_steer
 
-    sys_warning, sys_state, left_lane_warning, right_lane_warning =\
-      process_hud_alert(enabled, self.car_fingerprint, visual_alert,
-                        left_lane, right_lane, left_lane_depart, right_lane_depart)
+    sys_warning, sys_state = self.process_hud_alert( lkas_active, visual_alert, left_lane, right_lane )
 
     can_sends = []
     can_sends.append(create_lkas11(self.packer, frame, self.car_fingerprint, apply_steer, lkas_active,
                                    CS.lkas11, sys_warning, sys_state, enabled,
-                                   left_lane, right_lane,
-                                   left_lane_warning, right_lane_warning))
+                                   left_lane, right_lane  ))
 
     can_sends.append(create_mdps12(self.packer, frame, CS.mdps12))
 
-    
+
     str_log1 = 'torg:{:5.0f} '.format(  apply_steer )
     str_log2 = 'steer={:5.0f}  LKAS={:.0f} MDPS={}'.format( CS.out.steeringTorque, CS.lkas_button_on, CS.Mdps_ToiUnavail  )
     trace1.printf( '{} {}'.format( str_log1, str_log2 ) )
