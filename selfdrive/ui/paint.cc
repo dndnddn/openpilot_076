@@ -915,10 +915,9 @@ static void ui_draw_vision_speed(UIState *s) {
   char speed_str[32];
   NVGcolor val_color = COLOR_WHITE;
 
-  if( scene->brakePress || scene->brakeLights )
-  {
-    val_color = COLOR_RED;
-  }  
+  if( scene->brakePress  ) val_color = COLOR_RED;
+  else if( scene->brakeLights ) val_color = nvgRGBA(201, 34, 49, 100);
+  
 
   nvgBeginPath(s->vg);
   nvgRect(s->vg, viz_speed_x, box_y, viz_speed_w, header_h);
