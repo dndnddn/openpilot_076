@@ -280,7 +280,7 @@ static void screen_draw_button(UIState *s, int touch_x, int touch_y)
     nvgStrokeWidth(s->vg, 6);
     nvgStroke(s->vg);
 
-    nvgFontSize(s->vg, 70);
+    nvgFontSize(s->vg, 60);
 
     if ( lock_current_video == false )
     {

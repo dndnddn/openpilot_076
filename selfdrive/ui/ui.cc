@@ -915,7 +915,6 @@ int main(int argc, char* argv[]) {
     if (touched == 1) {
       set_awake(s, true);
 
-      printf( "touch x:%d,  y:%d \n", touch_x, touch_y );
       if( touch_x  < 1660 && touch_y < 885 )
       {
         handle_sidebar_touch(s, touch_x, touch_y);
