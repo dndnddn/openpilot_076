@@ -55,7 +55,7 @@ class CarController():
              left_lane, right_lane, left_lane_depart, right_lane_depart):
 
     abs_angle_steers =  abs(actuators.steerAngle)
-    v_ego_kph = CS.v_ego * CV.MS_TO_KPH
+    v_ego_kph = CS.out.vEgo * CV.MS_TO_KPH
 
     # Steering Torque
     param = SteerLimitParams()
