@@ -82,10 +82,7 @@ class CarController():
     # Disable steering while turning blinker on and speed below 60 kph
     if CS.out.leftBlinker or CS.out.rightBlinker:
       self.steer_torque_over = False
-      self.turning_signal_timer = 500  # Disable for 5.0 Seconds after blinker turned off
-    elif CS.left_blinker_flash or CS.right_blinker_flash:
-      self.steer_torque_over = False
-      self.turning_signal_timer = 500      
+      self.turning_signal_timer = 500  # Disable for 5.0 Seconds after blinker turned off 
 
     if self.steer_torque_over_timer:
       self.steer_torque_over_timer -= 1
