@@ -3,7 +3,7 @@ from selfdrive.car import apply_std_steer_torque_limits
 from selfdrive.car.hyundai.hyundaican import create_lkas11, create_clu11, create_lfa_mfa, create_mdps12
 from selfdrive.car.hyundai.values import Buttons, SteerLimitParams, CAR
 from opendbc.can.packer import CANPacker
-
+from selfdrive.config import Conversions as CV
 import common.log as trace1
 
 VisualAlert = car.CarControl.HUDControl.VisualAlert
@@ -48,11 +48,24 @@ class CarController():
     self.lkas_button = True
     self.longcontrol = False
 
+    self.steer_torque_over_timer = 0
+    self.turning_signal_timer = 0
+
   def update(self, enabled, CS, frame, actuators, pcm_cancel_cmd, visual_alert,
              left_lane, right_lane, left_lane_depart, right_lane_depart):
+
+    abs_angle_steers =  abs(actuators.steerAngle)
+    v_ego_kph = CS.v_ego * CV.MS_TO_KPH
+
     # Steering Torque
-    new_steer = actuators.steer * SteerLimitParams.STEER_MAX
-    apply_steer = apply_std_steer_torque_limits(new_steer, self.apply_steer_last, CS.out.steeringTorque, SteerLimitParams)
+    param = SteerLimitParams()
+
+    if abs_angle_steers < 1 or v_ego_kph < 5:
+        param.STEER_DELTA_UP  = 1
+        param.STEER_DELTA_DOWN = 2
+
+    new_steer = actuators.steer * param.STEER_MAX
+    apply_steer = apply_std_steer_torque_limits(new_steer, self.apply_steer_last, CS.out.steeringTorque, param)
     self.steer_rate_limited = new_steer != apply_steer
 
 
@@ -61,13 +74,36 @@ class CarController():
       if self.lkas_button != CS.lkas_button_on:
          self.lkas_button = CS.lkas_button_on
 
+    # streer over check
+    if abs( CS.out.steeringTorque ) > 180:
+      self.steer_torque_over_timer = 200
+
+
+    # Disable steering while turning blinker on and speed below 60 kph
+    if CS.out.leftBlinker or CS.out.rightBlinker:
+      self.steer_torque_over = False
+      self.turning_signal_timer = 500  # Disable for 5.0 Seconds after blinker turned off
+    elif CS.left_blinker_flash or CS.right_blinker_flash:
+      self.steer_torque_over = False
+      self.turning_signal_timer = 500      
+
+    if self.steer_torque_over_timer:
+      self.steer_torque_over_timer -= 1
+
+    if self.turning_signal_timer:
+      self.turning_signal_timer -= 1       
 
     # disable if steer angle reach 90 deg, otherwise mdps fault in some models
-    lkas_active = enabled and abs(CS.out.steeringAngle) < 90. and self.lkas_button
+    lkas_active = enabled and abs(CS.out.steeringAngle) < 90. #and self.lkas_button
 
     # fix for Genesis hard fault at low speed
     if CS.out.vEgo < 16.7 and self.car_fingerprint == CAR.HYUNDAI_GENESIS:
       lkas_active = 0
+
+    # disable lkas 
+    if steer_torque_over_timer:
+      lkas_active = 0
+
 
 
     if not lkas_active:
@@ -88,8 +124,8 @@ class CarController():
     can_sends.append(create_mdps12(self.packer, frame, CS.mdps12))
 
     
-    str_log1 = 'cruiseState={:.0f}/{:.0f}/{:.0f} lkas={}'.format( CS.out.cruiseState.available, CS.out.cruiseState.enabled, CS.cruise_engaged_on, CS.lkas_button_on  )
-    str_log2 = ' brake{:.0f}/{:.0f}  pcm_cancel={} '.format(  CS.out.brakePressed,  CS.out.brakeLights, pcm_cancel_cmd  )
+    str_log1 = 'torg:{:5.0f} '.format(  apply_steer )
+    str_log2 = 'steer={:5.0f}  '.format( CS.out.steeringTorque  )
     trace1.printf( '{} {}'.format( str_log1, str_log2 ) )
 
 

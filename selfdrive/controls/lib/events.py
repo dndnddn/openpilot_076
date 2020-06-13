@@ -209,7 +209,7 @@ EVENTS = {
   EventName.startupMaster: {
     ET.PERMANENT: Alert(
       "WARNING: This branch is not tested",
-      "Always keep hands on wheel and eyes on road",
+      "안전운전을 위해 항상 핸들을 잡고 도로교통 상황을 주시하세요",
       AlertStatus.userPrompt, AlertSize.mid,
       Priority.LOWER, VisualAlert.none, AudibleAlert.none, 0., 0., 15.),
   },
@@ -217,7 +217,7 @@ EVENTS = {
   EventName.startupNoControl: {
     ET.PERMANENT: Alert(
       "Dashcam mode",
-      "Always keep hands on wheel and eyes on road",
+      "안전운전을 위해 항상 핸들을 잡고 도로교통 상황을 주시하세요",
       AlertStatus.normal, AlertSize.mid,
       Priority.LOWER, VisualAlert.none, AudibleAlert.none, 0., 0., 15.),
   },
@@ -225,7 +225,7 @@ EVENTS = {
   EventName.startupNoCar: {
     ET.PERMANENT: Alert(
       "Dashcam mode for unsupported car",
-      "Always keep hands on wheel and eyes on road",
+      "안전운전을 위해 항상 핸들을 잡고 도로교통 상황을 주시하세요",
       AlertStatus.normal, AlertSize.mid,
       Priority.LOWER, VisualAlert.none, AudibleAlert.none, 0., 0., 15.),
   },
@@ -447,6 +447,15 @@ EVENTS = {
       AlertStatus.userPrompt, AlertSize.small,
       Priority.LOW, VisualAlert.none, AudibleAlert.none, 0., 0., .1),
   },
+
+  EventName.steerTorqueOver: {
+    ET.WARNING: Alert(
+      "steerTorqueOver",
+      "운전자 핸들 조향",
+      AlertStatus.userPrompt, AlertSize.small,
+      Priority.LOW, VisualAlert.none, AudibleAlert.none, 0., 0., .1),
+  },
+  
   # ********** events that affect controls state transitions **********
 
   EventName.pcmEnable: {

@@ -210,6 +210,9 @@ class CarInterface(CarInterfaceBase):
     events = self.create_common_events(ret)
     if not self.CS.lkas_button_on:
       events.add( EventName.lkasButtonOff )
+    elif self.CC.steer_torque_over_timer:
+      events.add( EventName.steerTorqueOver )
+
 
     #TODO: addd abs(self.CS.angle_steers) > 90 to 'steerTempUnavailable' event
 

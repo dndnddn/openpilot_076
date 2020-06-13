@@ -140,6 +140,7 @@ class CarState(CarStateBase):
         ret.gearShifter = GearShifter.unknown
 
 
+    # atom append
     self.cruise_main_button = cp.vl["CLU11"]["CF_Clu_CruiseSwMain"]
     self.cruise_buttons = cp.vl["CLU11"]["CF_Clu_CruiseSwState"]      
 
