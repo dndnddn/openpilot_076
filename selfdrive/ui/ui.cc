@@ -13,6 +13,7 @@
 #include "common/visionimg.h"
 #include "common/params.h"
 #include "ui.hpp"
+#include "dashcam.h"
 
 static int last_brightness = -1;
 static void set_brightness(UIState *s, int brightness) {
@@ -954,7 +955,9 @@ int main(int argc, char* argv[]) {
     }
 
     // Don't waste resources on drawing in case screen is off
-    if (s->awake) {
+    if (s->awake) 
+    {
+      dashcam(s, touch_x, touch_y);
       ui_draw(s);
       glFinish();
       should_swap = true;
