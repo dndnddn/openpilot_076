@@ -24,6 +24,8 @@ class CarState(CarStateBase):
     self.acc_active = False
     self.cruise_engaged_on = False
 
+    self.Mdps_ToiUnavail = 0
+
 
   def update(self, cp, cp_cam):
 
@@ -53,7 +55,9 @@ class CarState(CarStateBase):
     ret.steeringTorque = cp.vl["MDPS12"]['CR_Mdps_StrColTq']
     ret.steeringTorqueEps = cp.vl["MDPS12"]['CR_Mdps_OutTq']
     ret.steeringPressed = abs(ret.steeringTorque) > STEER_THRESHOLD
-    ret.steerWarning = cp.vl["MDPS12"]['CF_Mdps_ToiUnavail'] != 0
+
+    self.Mdps_ToiUnavail = cp.vl["MDPS12"]['CF_Mdps_ToiUnavail']
+    ret.steerWarning = Mdps_ToiUnavail != 0
 
 
     # cruise state

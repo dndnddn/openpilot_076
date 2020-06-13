@@ -211,7 +211,7 @@ class CarInterface(CarInterfaceBase):
 
     if self.cruise_enabled_prev:
       if not self.CS.lkas_button_on:
-        events.add( EventName.lkasButtonOff )
+        events.add( EventName.invalidLkasSetting )
       elif self.CC.steer_torque_over_timer:
         events.add( EventName.steerTorqueOver )
       elif ret.vEgo > MAX_CTRL_SPEED:

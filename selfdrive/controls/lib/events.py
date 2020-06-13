@@ -440,13 +440,6 @@ EVENTS = {
   },
 
 
-  EventName.lkasButtonOff: {
-    ET.WARNING: Alert(
-      "lkasButtonOff",
-      "LKAS button off",
-      AlertStatus.userPrompt, AlertSize.mid,
-      Priority.LOW, VisualAlert.none, AudibleAlert.none, 0., 0., .1),
-  },
 
   EventName.steerTorqueOver: {
     ET.WARNING: Alert(

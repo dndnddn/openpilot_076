@@ -122,7 +122,7 @@ class CarController():
 
     
     str_log1 = 'torg:{:5.0f} '.format(  apply_steer )
-    str_log2 = 'steer={:5.0f}  LKAS={:.0f}'.format( CS.out.steeringTorque, CS.lkas_button_on  )
+    str_log2 = 'steer={:5.0f}  LKAS={:.0f} MDPS={}'.format( CS.out.steeringTorque, CS.lkas_button_on, CS.Mdps_ToiUnavail  )
     trace1.printf( '{} {}'.format( str_log1, str_log2 ) )
 
 
