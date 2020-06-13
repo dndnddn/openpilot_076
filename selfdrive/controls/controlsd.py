@@ -562,8 +562,9 @@ class Controls:
     self.prof.checkpoint("State Control")
 
     # Publish data
-    self.publish_logs(CS, start_time, actuators, v_acc, a_acc, lac_log)
-    self.prof.checkpoint("Sent")
+    if self.enabled:
+      self.publish_logs(CS, start_time, actuators, v_acc, a_acc, lac_log)
+      self.prof.checkpoint("Sent")
 
     if not CS.cruiseState.enabled and not self.hyundai_lkas:
       self.hyundai_lkas = True
