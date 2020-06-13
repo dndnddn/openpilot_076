@@ -210,7 +210,7 @@ static void update_offroad_layout_timeout(UIState *s, int* timeout) {
 static void ui_init(UIState *s) {
 
   pthread_mutex_init(&s->lock, NULL);
-  s->sm = new SubMaster({"model", "controlsState", "uiLayoutState", "liveCalibration", "radarState", "thermal",
+  s->sm = new SubMaster({"model", "controlsState", "carState", "uiLayoutState", "liveCalibration", "radarState", "thermal",
                          "health", "ubloxGnss", "driverState", "dMonitoringState", "offroadLayout"
 #ifdef SHOW_SPEEDLIMIT
                                     , "liveMapData"
@@ -492,6 +492,16 @@ void handle_message(UIState *s, SubMaster &sm) {
     scene.awareness_status = data.getAwarenessStatus();
     s->preview_started = data.getIsPreview();
   }
+
+  if (sm.updated("carState")) {
+    auto data = sm["carState"].getCarState();
+    scene.brakePress = data.getBrakePressed();
+    scene.brakeLights = data.getBrakeLights();
+
+    scene.leftBlinker = data.getLeftBlinker();
+    scene.rightBlinker = data.getRightBlinker();
+    scene.getGearShifter = data.getGearShifter()
+  }  
 
   s->started = s->thermal_started || s->preview_started ;
   // Handle onroad/offroad transition
