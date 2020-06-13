@@ -98,7 +98,7 @@ class CarController():
       lkas_active = 0
 
     # disable lkas 
-    if steer_torque_over_timer:
+    if self.steer_torque_over_timer:
       lkas_active = 0
 
 
