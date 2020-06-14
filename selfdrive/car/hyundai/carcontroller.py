@@ -99,8 +99,7 @@ class CarController():
     # streer over check
     if abs( CS.out.steeringTorque ) > 180:  #사용자 핸들 토크
       self.steer_torque_over_timer = 200
-    elif CS.out.steerWarning:
-      self.steer_torque_over_timer = 100
+
 
     # Disable steering while turning blinker on and speed below 60 kph
     #if CS.out.leftBlinker or CS.out.rightBlinker:
@@ -118,7 +117,7 @@ class CarController():
       lkas_active = 0
 
     # disable lkas 
-    if self.steer_torque_over_timer:
+    if self.steer_torque_over_timer or CS.out.steerWarning:
       lkas_active = 0
 
 
