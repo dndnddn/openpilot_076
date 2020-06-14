@@ -51,14 +51,14 @@ class CarController():
     sys_state = 1
     if not self.lkas_button:
       sys_state = 0
-    elif hud_timer_left and hud_timer_right or sys_warning:  # HUD alert only display when LKAS status is active
+    elif self.hud_timer_left and self.hud_timer_right or sys_warning:  # HUD alert only display when LKAS status is active
       if enabled or sys_warning:
         sys_state = 3
       else:
         sys_state = 4
-    elif hud_timer_left:
+    elif self.hud_timer_left:
       sys_state = 5
-    elif hud_timer_right:
+    elif self.hud_timer_right:
       sys_state = 6
 
     return sys_warning, sys_state
