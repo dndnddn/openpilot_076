@@ -23,6 +23,7 @@ class LatControlPID():
       output_steer = 0.0
       pid_log.active = False
       self.pid.reset()
+      self.angle_steers_des = path_plan.angleSteers
     else:
       self.angle_steers_des = path_plan.angleSteers  # get from MPC/PathPlanner
 
