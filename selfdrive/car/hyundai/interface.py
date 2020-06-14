@@ -25,10 +25,10 @@ class CarInterface(CarInterfaceBase):
 
     ret.carName = "hyundai"
     ret.safetyModel = car.CarParams.SafetyModel.hyundai
-    ret.radarOffCan = False  #True
+    ret.radarOffCan = True  #False  #True
 
     # Hyundai port is a community feature for now
-    ret.communityFeature = True #False  #True
+    ret.communityFeature = False  #True
 
     ret.steerActuatorDelay = 0.1  # Default delay
     ret.steerRateCost = 0.5
@@ -40,20 +40,21 @@ class CarInterface(CarInterfaceBase):
       ret.mass = 1675. + STD_CARGO_KG
       ret.wheelbase = 2.845
 
-      #ret.steerRatio = 12.37  #12.5
-      #ret.steerRateCost = 0.5 #0.4
-      #ret.lateralTuning.pid.kf = 0.00003 
-      #ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[9., 22.], [9., 22.]]
-      #ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.15, 0.20], [0.03, 0.04]]
+      ret.steerRatio = 12.37  #12.5
+      ret.steerRateCost = 0.5 #0.4
 
 
-      ret.steerRatio = 11.5  #12.5
-      ret.steerRateCost = 0.05 #0.4
-      ret.lateralTuning.pid.kf = 0.00001
+      ret.lateralTuning.pid.kf = 0.00003 
       ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[9., 22.], [9., 22.]]
-      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.15, 0.18], [0.02, 0.03]]
+      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.15, 0.20], [0.03, 0.04]]
 
-      #  kp:0.03, ki:0.01
+
+      #ret.steerRatio = 10.5  #12.5
+      #ret.steerRateCost = 0.01 #0.4
+      #ret.lateralTuning.pid.kf = 0.00001
+      #ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[9., 22.], [9., 22.]]
+      #ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.13, 0.14], [0.04, 0.05]]
+
 
       # indi
       #ret.lateralTuning.init('indi')
