@@ -40,6 +40,7 @@ class CarInterface(CarInterfaceBase):
       ret.mass = 1675. + STD_CARGO_KG
       ret.wheelbase = 2.845
 
+      ret.steerActuatorDelay = 0.1  # Default delay
       ret.steerRatio = 12.37  #12.5
       ret.steerRateCost = 0.5 #0.4
       ret.lateralTuning.pid.kf = 0.00003 
