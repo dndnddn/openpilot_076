@@ -40,11 +40,11 @@ class CarInterface(CarInterfaceBase):
       ret.mass = 1675. + STD_CARGO_KG
       ret.wheelbase = 2.845
 
-      ret.steerRatio = 12.27  #12.5
+      ret.steerRatio = 12.37  #12.5
       ret.steerRateCost = 0.5 #0.4
       ret.lateralTuning.pid.kf = 0.00003 
       ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[9., 22.], [9., 22.]]
-      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.10, 0.20], [0.02, 0.03]]
+      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.15, 0.20], [0.03, 0.04]]
 
 
       #ret.steerRatio = 10.5  #12.5
@@ -249,16 +249,12 @@ class CarInterface(CarInterfaceBase):
         #events.add( EventName.invalidLkasSetting )
       elif self.CC.steer_torque_over_timer:
         self.meg_name = EventName.steerTorqueOver
-        #events.add( EventName.steerTorqueOver )
       elif ret.vEgo > MAX_CTRL_SPEED:
         self.meg_name = EventName.speedTooHigh
-        #events.add( EventName.speedTooHigh )
       elif ret.steerError:
         self.meg_name = EventName.steerUnavailable
-        #events.add( EventName.steerUnavailable )
       elif ret.steerWarning:
         self.meg_name = EventName.steerTempUnavailable
-        #events.add( EventName.steerTempUnavailable )
       else:
         meg_timer = 0
         self.meg_name =  None
@@ -285,12 +281,8 @@ class CarInterface(CarInterfaceBase):
     self.CS.out = ret.as_reader()
     return self.CS.out
 
-  def apply(self, c, sm, LaC):
-    #can_sends = self.CC.update(c.enabled, self.CS, self.frame, c.actuators,
-    #                           c.cruiseControl.cancel, c.hudControl.visualAlert, c.hudControl.leftLaneVisible,
-    #                           c.hudControl.rightLaneVisible, c.hudControl.leftLaneDepart, c.hudControl.rightLaneDepart)
-
-    can_sends = self.CC.update(c, self.CS, self.frame, sm, LaC )
+  def apply(self, c, sm ):
+    can_sends = self.CC.update(c, self.CS, self.frame, sm )
 
     self.frame += 1
     return can_sends

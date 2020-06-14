@@ -4,6 +4,7 @@ from selfdrive.car.hyundai.hyundaican import create_lkas11, create_clu11, create
 from selfdrive.car.hyundai.values import Buttons, SteerLimitParams, CAR
 from opendbc.can.packer import CANPacker
 from selfdrive.config import Conversions as CV
+from selfdrive.car.hyundai.spdcontroller  import SpdController
 import common.log as trace1
 
 VisualAlert = car.CarControl.HUDControl.VisualAlert
@@ -21,11 +22,13 @@ class CarController():
     self.resume_cnt = 0
     self.last_resume_frame = 0
     self.last_lead_distance = 0
-    self.lkas_button = True
+
     self.longcontrol = False
 
     self.steer_torque_over_timer = 0
-
+    self.steer_torque_ratio = 1
+    self.steer_torque_ratio_dir = 1
+    self.steer_torque_active = 0
 
     # hud
     self.hud_timer_left = 0
@@ -47,12 +50,11 @@ class CarController():
     if self.hud_timer_right:
       self.hud_timer_right -= 1
 
+
     # initialize to no line visible
     sys_state = 1
-    #if not self.lkas_button:
-    #  sys_state = 0
     if self.hud_timer_left and self.hud_timer_right or sys_warning:  # HUD alert only display when LKAS status is active
-      if enabled or sys_warning:
+      if (self.steer_torque_ratio > 0.5) and (enabled or sys_warning):
         sys_state = 3
       else:
         sys_state = 4
@@ -64,8 +66,7 @@ class CarController():
     return sys_warning, sys_state
 
 
-  def update(self, CC, CS, frame,  sm, LaC ):
-
+  def update(self, CC, CS, frame,  sm ):
     enabled = CC.enabled
     actuators = CC.actuators
     pcm_cancel_cmd = CC.cruiseControl.cancel
@@ -88,21 +89,13 @@ class CarController():
     new_steer = actuators.steer * param.STEER_MAX
     apply_steer = apply_std_steer_torque_limits(new_steer, self.apply_steer_last, CS.out.steeringTorque, param)
     self.steer_rate_limited = new_steer != apply_steer
-
-
-    ### LKAS button to temporarily disable steering
-    if not CS.lkas_error:
-      if self.lkas_button != CS.lkas_button_on:
-         self.lkas_button = CS.lkas_button_on
+    self.steer_torque_active = apply_steer
 
 
     # streer over check
-    if abs( CS.out.steeringTorque ) > 180:  #사용자 핸들 토크
+    if v_ego_kph > 5 and abs( CS.out.steeringTorque ) > 180:  #사용자 핸들 토크
       self.steer_torque_over_timer = 200
 
-
-    # Disable steering while turning blinker on and speed below 60 kph
-    #if CS.out.leftBlinker or CS.out.rightBlinker:
 
     if path_plan.laneChangeState != LaneChangeState.off:
       self.steer_torque_over_timer = 0
@@ -116,13 +109,31 @@ class CarController():
     if CS.out.vEgo < 16.7 and self.car_fingerprint == CAR.HYUNDAI_GENESIS:
       lkas_active = 0
 
-    # disable lkas 
+ 
     if self.steer_torque_over_timer:  #or CS.out.steerWarning:
-      lkas_active = 0
+      self.steer_torque_ratio_dir = -1
+    else:
+      self.steer_torque_ratio_dir = 1
 
+
+    # smoth torque enable or disable
+    if self.steer_torque_ratio_dir >= 1:
+      if self.steer_torque_ratio < 1:
+        self.steer_torque_ratio += 0.005
+    elif self.steer_torque_ratio_dir <= -1:
+      if self.steer_torque_ratio > 0:
+        self.steer_torque_ratio -= 0.005
+    else:
+      self.steer_torque_ratio = 1
+
+    if self.steer_torque_ratio < 1:
+      self.steer_torque_active *= min( 1, self.steer_torque_ratio )
+      apply_steer = int(self.steer_torque_active)
 
     if not lkas_active:
       apply_steer = 0
+
+
 
     self.apply_steer_last = apply_steer
 
@@ -133,14 +144,14 @@ class CarController():
                                    CS.lkas11, sys_warning, sys_state, enabled,
                                    left_lane, right_lane  ))
 
-    if not CS.main_on:
+    if CS.lkas_button_on:
       can_sends.append(create_mdps12(self.packer, frame, CS.mdps12))
-      print( 'can_sends.append(create_mdps12(self.packer, frame, CS.mdps12))' )
 
 
+    dRel, yRel, vRel = SpdController.get_lead( sm )
 
-    str_log1 = 'torg:{:5.0f} v={:.1f} d={:.1f}'.format(  apply_steer, CS.lead_objspd, CS.lead_distance  )
-    str_log2 = 'steer={:5.0f} U={:.0f}  LK={:.0f} LC={}'.format( CS.out.steeringTorque, CS.Mdps_ToiUnavail, CS.lkas_button_on,  path_plan.laneChangeState  )
+    str_log1 = 'torg:{:5.0f} C={:.1f}/{:.1f} V={:.1f}/{:.1f}'.format(  apply_steer, CS.lead_objspd, CS.lead_distance, dRel, vRel  )
+    str_log2 = 'steer={:5.0f} U={:.0f}  LK={:.0f} Ratio={:.3f} LC={}'.format( CS.out.steeringTorque, CS.Mdps_ToiUnavail, CS.lkas_button_on, self.steer_torque_ratio, path_plan.laneChangeState  )
     trace1.printf( '{} {}'.format( str_log1, str_log2 ) )
 
 
@@ -171,3 +182,4 @@ class CarController():
       can_sends.append(create_lfa_mfa(self.packer, frame, enabled))
 
     return can_sends
+
