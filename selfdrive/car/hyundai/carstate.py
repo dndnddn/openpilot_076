@@ -56,8 +56,15 @@ class CarState(CarStateBase):
     ret.steeringTorqueEps = cp.vl["MDPS12"]['CR_Mdps_OutTq']
     ret.steeringPressed = abs(ret.steeringTorque) > STEER_THRESHOLD
 
+    self.lead_distance = cp.vl["SCC11"]['ACC_ObjDist']
+    lead_objspd = cp.vl["SCC11"]['ACC_ObjRelSpd']
+    self.lead_objspd = lead_objspd * CV.MS_TO_KPH
+
+    self.VSetDis = cp.vl["SCC11"]['VSetDis']
+
     self.Mdps_ToiUnavail = cp.vl["MDPS12"]['CF_Mdps_ToiUnavail']
     ret.steerWarning = self.Mdps_ToiUnavail != 0
+
 
 
     # cruise state
@@ -77,7 +84,7 @@ class CarState(CarStateBase):
     if self.acc_active:
       is_set_speed_in_mph = int(cp.vl["CLU11"]["CF_Clu_SPEED_UNIT"])
       speed_conv = CV.MPH_TO_MS if is_set_speed_in_mph else CV.KPH_TO_MS
-      ret.cruiseState.speed = cp.vl["SCC11"]['VSetDis'] * speed_conv
+      ret.cruiseState.speed = self.VSetDis * speed_conv
     else:
       ret.cruiseState.speed = 0
 
@@ -206,6 +213,7 @@ class CarState(CarStateBase):
       ("ACCEnable", "TCS13", 0),
       ("BrakeLight", "TCS13", 0),
       ("DriverBraking", "TCS13", 0),
+      ("DriverOverride", "TCS13", 0),
 
       ("ESC_Off_Step", "TCS15", 0),
 
@@ -230,6 +238,7 @@ class CarState(CarStateBase):
       ("VSetDis", "SCC11", 0),
       ("SCCInfoDisplay", "SCC11", 0),
       ("ACC_ObjDist", "SCC11", 0),
+      ("ACC_ObjRelSpd", "SCC11", 0),
       ("ACCMode", "SCC12", 1),
 
       ("PV_AV_CAN", "EMS12", 0),

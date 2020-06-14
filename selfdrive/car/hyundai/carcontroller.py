@@ -137,8 +137,9 @@ class CarController():
     can_sends.append(create_mdps12(self.packer, frame, CS.mdps12))
 
 
-    str_log1 = 'torg:{:5.0f} '.format(  apply_steer )
-    str_log2 = 'steer={:5.0f}  LKAS={:.0f} MDPS={}'.format( CS.out.steeringTorque, CS.lkas_button_on, CS.Mdps_ToiUnavail  )
+
+    str_log1 = 'torg:{:5.0f} v={:.1f} d={:.1f}'.format(  apply_steer, CS.lead_objspd, CS.lead_distance  )
+    str_log2 = 'steer={:5.0f}  LC={}'.format( CS.out.steeringTorque,  path_plan.laneChangeState  )
     trace1.printf( '{} {}'.format( str_log1, str_log2 ) )
 
 
