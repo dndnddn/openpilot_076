@@ -26,6 +26,9 @@ class CarState(CarStateBase):
 
     self.Mdps_ToiUnavail = 0
 
+    self.left_blinker_flash = 0
+    self.right_blinker_flash = 0    
+
 
   def update(self, cp, cp_cam):
 
@@ -52,12 +55,24 @@ class CarState(CarStateBase):
     ret.yawRate = cp.vl["ESP12"]['YAW_RATE']
     #ret.leftBlinker = cp.vl["CGW1"]['CF_Gway_TSigLHSw'] != 0
     #ret.rightBlinker = cp.vl["CGW1"]['CF_Gway_TSigRHSw'] != 0
-    ret.leftBlinker = cp.vl["CGW1"]['CF_Gway_TurnSigLh'] != 0
-    ret.rightBlinker = cp.vl["CGW1"]['CF_Gway_TurnSigRh'] != 0
+    leftBlinker = cp.vl["CGW1"]['CF_Gway_TurnSigLh'] != 0
+    rightBlinker = cp.vl["CGW1"]['CF_Gway_TurnSigRh'] != 0
     ret.steeringTorque = cp.vl["MDPS12"]['CR_Mdps_StrColTq']
     ret.steeringTorqueEps = cp.vl["MDPS12"]['CR_Mdps_OutTq']
     ret.steeringPressed = abs(ret.steeringTorque) > STEER_THRESHOLD
 
+    if leftBlinker:
+      self.left_blinker_flash = 600
+    elif  self.left_blinker_flash:
+      self.left_blinker_flash -= 1
+
+    if rightBlinker:
+      self.right_blinker_flash = 600
+    elif  self.right_blinker_flash:
+      self.right_blinker_flash -= 1
+
+    ret.leftBlinker = self.left_blinker_flash != 0
+    ret.rightBlinker = self.right_blinker_flash != 0
     
     self.lead_distance = cp.vl["SCC11"]['ACC_ObjDist']
     lead_objspd = cp.vl["SCC11"]['ACC_ObjRelSpd']
