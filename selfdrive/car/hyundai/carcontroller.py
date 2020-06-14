@@ -138,7 +138,7 @@ class CarController():
 
 
     str_log1 = 'torg:{:5.0f} v={:.1f} d={:.1f}'.format(  apply_steer, CS.lead_objspd, CS.lead_distance  )
-    str_log2 = 'steer={:5.0f} {:.0f}  LC={}'.format( CS.out.steeringTorque, CS.Mdps_ToiUnavail,  path_plan.laneChangeState  )
+    str_log2 = 'steer={:5.0f} U={:.0f}  LK={:.0f} LC={}'.format( CS.out.steeringTorque, CS.Mdps_ToiUnavail, CS.lkas_button_on,  path_plan.laneChangeState  )
     trace1.printf( '{} {}'.format( str_log1, str_log2 ) )
 
 

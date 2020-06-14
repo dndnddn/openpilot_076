@@ -173,10 +173,10 @@ class CarState(CarStateBase):
     # atom append
     self.cruise_main_button = cp.vl["CLU11"]["CF_Clu_CruiseSwMain"]
     self.cruise_buttons = cp.vl["CLU11"]["CF_Clu_CruiseSwState"]      
-
-    self.lkas_error = cp_cam.vl["LKAS11"]["CF_Lkas_LdwsSysState"] == 7
+    self.Lkas_LdwsSysState = cp_cam.vl["LKAS11"]["CF_Lkas_LdwsSysState"]
+    self.lkas_error = self.Lkas_LdwsSysState  == 7
     if not self.lkas_error:
-      self.lkas_button_on = cp_cam.vl["LKAS11"]["CF_Lkas_LdwsSysState"]    
+      self.lkas_button_on = self.Lkas_LdwsSysState 
 
 
     # save the entire LKAS11 and CLU11
