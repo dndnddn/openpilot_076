@@ -8,6 +8,12 @@ from selfdrive.car.interfaces import CarInterfaceBase, MAX_CTRL_SPEED
 EventName = car.CarEvent.EventName
 ButtonType = car.CarState.ButtonEvent.Type
 class CarInterface(CarInterfaceBase):
+  def __init__(self, CP, CarController, CarState):
+    super().__init__(CP, CarController, CarState )
+
+
+    self.meg_timer = 0
+    self.meg_name = 0
 
   @staticmethod
   def compute_gb(accel, speed):
@@ -228,17 +234,41 @@ class CarInterface(CarInterfaceBase):
 
     events = self.create_common_events(ret)
 
-    if self.cruise_enabled_prev:
-      if not self.CS.lkas_button_on:
-        events.add( EventName.invalidLkasSetting )
+
+    
+    if not self.cruise_enabled_prev:
+      self.meg_timer = 0
+      self.meg_name =  None
+    else:
+      meg_timer = 100
+      if self.meg_timer:
+        self.meg_timer -= 1
+        meg_timer = 0
+      elif not self.CS.lkas_button_on:
+        self.meg_name = EventName.invalidLkasSetting
+        #events.add( EventName.invalidLkasSetting )
       elif self.CC.steer_torque_over_timer:
-        events.add( EventName.steerTorqueOver )
+        self.meg_name = EventName.steerTorqueOver
+        #events.add( EventName.steerTorqueOver )
       elif ret.vEgo > MAX_CTRL_SPEED:
-        events.add( EventName.speedTooHigh )
+        self.meg_name = EventName.speedTooHigh
+        #events.add( EventName.speedTooHigh )
       elif ret.steerError:
-        events.add( EventName.steerUnavailable )
+        self.meg_name = EventName.steerUnavailable
+        #events.add( EventName.steerUnavailable )
       elif ret.steerWarning:
-        events.add( EventName.steerTempUnavailable )
+        self.meg_name = EventName.steerTempUnavailable
+        #events.add( EventName.steerTempUnavailable )
+      else:
+        meg_timer = 0
+        self.meg_name =  None
+
+      if meg_timer != 0:
+        self.meg_timer = 100
+
+      if self.meg_timer and  self.meg_name != None:
+        events.add( self.meg_name )
+    
 
     #TODO: addd abs(self.CS.angle_steers) > 90 to 'steerTempUnavailable' event
 
