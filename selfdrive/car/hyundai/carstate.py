@@ -52,8 +52,8 @@ class CarState(CarStateBase):
     ret.yawRate = cp.vl["ESP12"]['YAW_RATE']
     #ret.leftBlinker = cp.vl["CGW1"]['CF_Gway_TSigLHSw'] != 0
     #ret.rightBlinker = cp.vl["CGW1"]['CF_Gway_TSigRHSw'] != 0
-    ret.leftBlinker = cp.vl["CGW1"]['CF_Gway_TurnSigLh']
-    ret.rightBlinker = cp.vl["CGW1"]['CF_Gway_TurnSigRh']
+    ret.leftBlinker = cp.vl["CGW1"]['CF_Gway_TurnSigLh'] != 0
+    ret.rightBlinker = cp.vl["CGW1"]['CF_Gway_TurnSigRh'] != 0
     ret.steeringTorque = cp.vl["MDPS12"]['CR_Mdps_StrColTq']
     ret.steeringTorqueEps = cp.vl["MDPS12"]['CR_Mdps_OutTq']
     ret.steeringPressed = abs(ret.steeringTorque) > STEER_THRESHOLD
