@@ -486,7 +486,7 @@ class Controls:
     controlsState.aTarget = float(a_acc)
     controlsState.jerkFactor = float(self.sm['plan'].jerkFactor)
     controlsState.gpsPlannerActive = self.sm['plan'].gpsPlannerActive
-    controlsState.vCurvature = self.sm['plan'].vCurvatureCurvature
+    controlsState.vCurvature = self.sm['plan'].vCurvature
     controlsState.decelForModel = self.sm['plan'].longitudinalPlanSource == LongitudinalPlanSource.model
     controlsState.cumLagMs = -self.rk.remaining * 1000.
     controlsState.startMonoTime = int(start_time * 1e9)
