@@ -889,7 +889,7 @@ static void ui_draw_debug(UIState *s)
   nvgText(s->vg, x_pos, y_pos+0, speed_str, NULL);
   snprintf(speed_str, sizeof(speed_str), "D:%d,%d", scene.leftBlinker, scene.rightBlinker  );
   nvgText(s->vg, x_pos, y_pos+50, speed_str, NULL);   
-  snprintf(speed_str, sizeof(speed_str), "G:%d,%d,%d", (int)scene.getGearShifter, scene.engaged, scene.engageable   );
+  snprintf(speed_str, sizeof(speed_str), "G:%d,%d,%d", (int)scene.getGearShifter, scene.engagedengaged, scene.engageable   );
   nvgText(s->vg, x_pos, y_pos+100, speed_str, NULL);   
 
 
@@ -956,7 +956,7 @@ static void ui_draw_vision_event(UIState *s) {
     } else if (is_engageable) {
         color = nvgRGBA(23, 51, 73, 255);
     } else {
-      color = nvgRGBA(200, 51, 73, 100);
+      color = nvgRGBA(100, 100, 100, 50);
     }
 
     //if (s->scene.engageable){
