@@ -41,6 +41,7 @@ class CarInterface(CarInterfaceBase):
       #ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[9., 22.], [9., 22.]]
       #ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.10, 0.20], [0.01, 0.04]]
 
+
       #ret.steerRatio = 10.5  #12.5
       #ret.steerRateCost = 0.01 #0.4
       #ret.lateralTuning.pid.kf = 0.00001
@@ -48,6 +49,7 @@ class CarInterface(CarInterfaceBase):
       #ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.13, 0.14], [0.04, 0.05]]
 
 
+      # indi
       ret.lateralTuning.init('indi')
       ret.lateralTuning.indi.innerLoopGain = 3.0
       ret.lateralTuning.indi.outerLoopGain = 2.0
