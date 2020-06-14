@@ -43,28 +43,32 @@ class CarState(CarStateBase):
     ret.wheelSpeeds.rl = cp.vl["WHL_SPD11"]['WHL_SPD_RL'] * CV.KPH_TO_MS
     ret.wheelSpeeds.rr = cp.vl["WHL_SPD11"]['WHL_SPD_RR'] * CV.KPH_TO_MS
     ret.vEgoRaw = (ret.wheelSpeeds.fl + ret.wheelSpeeds.fr + ret.wheelSpeeds.rl + ret.wheelSpeeds.rr) / 4.
-    ret.vEgo, ret.aEgo = self.update_speed_kf(ret.vEgoRaw)
+    ret.aEgo = self.update_speed_kf(ret.vEgoRaw)
 
     ret.standstill = ret.vEgoRaw < 0.1
 
     ret.steeringAngle = cp.vl["SAS11"]['SAS_Angle']
     ret.steeringRate = cp.vl["SAS11"]['SAS_Speed']
     ret.yawRate = cp.vl["ESP12"]['YAW_RATE']
-    ret.leftBlinker = cp.vl["CGW1"]['CF_Gway_TSigLHSw'] != 0
-    ret.rightBlinker = cp.vl["CGW1"]['CF_Gway_TSigRHSw'] != 0
+    #ret.leftBlinker = cp.vl["CGW1"]['CF_Gway_TSigLHSw'] != 0
+    #ret.rightBlinker = cp.vl["CGW1"]['CF_Gway_TSigRHSw'] != 0
+    ret.leftBlinker = cp.vl["CGW1"]['CF_Gway_TurnSigLh']
+    ret.rightBlinker = cp.vl["CGW1"]['CF_Gway_TurnSigRh']
     ret.steeringTorque = cp.vl["MDPS12"]['CR_Mdps_StrColTq']
     ret.steeringTorqueEps = cp.vl["MDPS12"]['CR_Mdps_OutTq']
     ret.steeringPressed = abs(ret.steeringTorque) > STEER_THRESHOLD
 
+    
     self.lead_distance = cp.vl["SCC11"]['ACC_ObjDist']
     lead_objspd = cp.vl["SCC11"]['ACC_ObjRelSpd']
     self.lead_objspd = lead_objspd * CV.MS_TO_KPH
 
     self.VSetDis = cp.vl["SCC11"]['VSetDis']
+    self.clu_Vanz = cp.vl["CLU11"]["CF_Clu_Vanz"]
 
     self.Mdps_ToiUnavail = cp.vl["MDPS12"]['CF_Mdps_ToiUnavail']
     ret.steerWarning = self.Mdps_ToiUnavail != 0
-
+    ret.vEgo = self.clu_Vanz * CV.KPH_TO_MS
 
 
     # cruise state
