@@ -151,7 +151,7 @@ class CarController():
     dRel, yRel, vRel = SpdController.get_lead( sm )
 
     str_log1 = 'torg:{:5.0f} C={:.1f}/{:.1f} V={:.1f}/{:.1f}'.format(  apply_steer, CS.lead_objspd, CS.lead_distance, dRel, vRel  )
-    str_log2 = 'steer={:5.0f} U={:.0f}  LK={:.0f} Ratio={:.3f} LC={}'.format( CS.out.steeringTorque, CS.Mdps_ToiUnavail, CS.lkas_button_on, self.steer_torque_ratio, path_plan.laneChangeState  )
+    str_log2 = 'steer={:5.0f} U={:.0f}  LK={:.0f} Ratio={:.1f} LC={}'.format( CS.out.steeringTorque, CS.Mdps_ToiUnavail, CS.lkas_button_on, self.steer_torque_ratio, path_plan.laneChangeState  )
     trace1.printf( '{} {}'.format( str_log1, str_log2 ) )
 
 

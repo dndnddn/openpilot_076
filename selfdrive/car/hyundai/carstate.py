@@ -82,8 +82,13 @@ class CarState(CarStateBase):
     self.clu_Vanz = cp.vl["CLU11"]["CF_Clu_Vanz"]
 
     self.Mdps_ToiUnavail = cp.vl["MDPS12"]['CF_Mdps_ToiUnavail']
-    ret.steerWarning = self.Mdps_ToiUnavail != 0
     ret.vEgo = self.clu_Vanz * CV.KPH_TO_MS
+
+    if ret.vEgo > 5:    
+      ret.steerWarning = self.Mdps_ToiUnavail != 0
+    else:
+      ret.steerWarning = False
+
 
 
     # cruise state
