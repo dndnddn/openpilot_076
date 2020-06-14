@@ -358,7 +358,7 @@ void dashcam(UIState *s, int touch_x, int touch_y)
  // }
   
   
-  if (!s->vision_connected || !s->scene.engaged)
+  if (!s->vision_connected )
   {
     // Assume car is not in drive so stop recording
     lock_current_video = false;
@@ -367,7 +367,7 @@ void dashcam(UIState *s, int touch_x, int touch_y)
   }
   else if( lock_current_video == true  )
   {
-    if( s->scene.v_ego < 2.9 )
+    if( s->scene.v_ego < 2.9 || !s->scene.engaged )
     {
       if( captureState == CAPTURE_STATE_CAPTURING )
       {

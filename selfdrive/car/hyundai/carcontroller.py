@@ -6,6 +6,7 @@ from opendbc.can.packer import CANPacker
 from selfdrive.config import Conversions as CV
 from selfdrive.car.hyundai.spdcontroller  import SpdController
 import common.log as trace1
+import common.CTime1000 as tm
 
 VisualAlert = car.CarControl.HUDControl.VisualAlert
 LaneChangeState = log.PathPlan.LaneChangeState
@@ -29,6 +30,8 @@ class CarController():
     self.steer_torque_ratio = 1
     self.steer_torque_ratio_dir = 1
     self.steer_torque_active = 0
+
+    self.timer1 = tm.CTime1000("CarController")
 
     # hud
     self.hud_timer_left = 0
@@ -151,7 +154,7 @@ class CarController():
     dRel, yRel, vRel = SpdController.get_lead( sm )
 
     str_log1 = 'torg:{:5.0f} C={:.1f}/{:.1f} V={:.1f}/{:.1f}'.format(  apply_steer, CS.lead_objspd, CS.lead_distance, dRel, vRel  )
-    str_log2 = 'steer={:5.0f} U={:.0f}  LK={:.0f} Ratio={:.1f} LC={}'.format( CS.out.steeringTorque, CS.Mdps_ToiUnavail, CS.lkas_button_on, self.steer_torque_ratio, path_plan.laneChangeState  )
+    str_log2 = 'steer={:5.0f} U={:.0f}  LK={:.0f} Ratio={:.1f} LC={} tm={:.1f}'.format( CS.out.steeringTorque, CS.Mdps_ToiUnavail, CS.lkas_button_on, self.steer_torque_ratio, path_plan.laneChangeState, self.timer1.sampleTime()  )
     trace1.printf( '{} {}'.format( str_log1, str_log2 ) )
 
 
