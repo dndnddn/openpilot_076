@@ -405,12 +405,12 @@ void handle_message(UIState *s, SubMaster &sm) {
       scene.alert.text2[0] = '\0';
 
 
-    scene.steerOverride = datad.getSteerOverride();
+    scene.steerOverride = data.getSteerOverride();
 
     auto pdata = data.getLateralControlState();
     auto piddata = pdata.getPidState();
 
-    scene.output_scale = piddata.output;
+    scene.output_scale = piddata.getOutput();
 
   }
   if (sm.updated("radarState")) {

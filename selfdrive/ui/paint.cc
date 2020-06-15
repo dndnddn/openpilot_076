@@ -235,8 +235,8 @@ static void ui_draw_track(UIState *s, bool is_mpc, track_vertices_data *pvd)
   nvgClosePath(s->vg);
 
   NVGpaint track_bg;
-  NVGpaint nColor1 = COLOR_WHITE;
-  NVGpaint nColor2 = COLOR_WHITE_ALPHA(0);
+  NVGcolor nColor1 = COLOR_WHITE;
+  NVGcolor nColor2 = COLOR_WHITE_ALPHA(0);
   if (is_mpc) {
     // Draw colored MPC track
     if (scene->steerOverride) {
