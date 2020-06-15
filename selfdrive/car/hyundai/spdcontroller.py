@@ -157,6 +157,24 @@ class SpdController():
 
         return dRel, yRel, vRel
 
+
+    @staticmethod
+    def get_radarState( sm ):
+        lead_1 = sm['radarState'].leadOne
+
+        if lead_1.status:
+            dRel = lead_1.dRel
+            vRel = lead_1.vRel
+            yRel = lead_1.yRel
+        else:
+            dRel = 150
+            yRel = 0
+            vRel = 0
+
+
+        return dRel, yRel, vRel
+
+
     def get_tm_speed(self, CS, set_time, add_val, safety_dis=5):
         time = int(set_time)
 
