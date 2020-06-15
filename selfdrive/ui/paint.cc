@@ -214,6 +214,7 @@ static void update_all_track_data(UIState *s) {
 }
 
 
+/*
 static void ui_draw_track(UIState *s, bool is_mpc, track_vertices_data *pvd) {
 const UIScene *scene = &s->scene;
   const PathData path = scene->model.path;
@@ -272,8 +273,8 @@ const UIScene *scene = &s->scene;
   nvgFill(s->vg);
   nvgRestore(s->vg);
 }
+*/
 
-/*
 static void ui_draw_track(UIState *s, bool is_mpc, track_vertices_data *pvd) 
 {
   const UIScene *scene = &s->scene;
@@ -302,29 +303,13 @@ static void ui_draw_track(UIState *s, bool is_mpc, track_vertices_data *pvd)
     if (scene->steerOverride) {
       nColor1 = nvgRGBA(0, 191, 255, 255);
       nColor2 = nvgRGBA(0, 95, 128, 50);
-
-      //track_bg = nvgLinearGradient(s->vg, vwp_w, vwp_h, vwp_w, vwp_h*.4,
-      //  nvgRGBA(0, 191, 255, 255), nvgRGBA(0, 95, 128, 50));
     } else {
-      int torque_scale = (int)fabs(510*(float)scene->output_scale);
-      int red_lvl = fmin(255, torque_scale);
-      int green_lvl = fmin(255, 510-torque_scale);
-
-     
       const uint8_t *clr = bg_colors[s->status];
       nColor1 = nvgRGBA(clr[0], clr[1], clr[2], 255);
       nColor2 = nvgRGBA(clr[0], clr[1], clr[2], 255/2);
-
-      //track_bg = nvgLinearGradient(s->vg, vwp_w, vwp_h, vwp_w, vwp_h*.4,
-      //  nvgRGBA(clr[0], clr[1], clr[2], 255), nvgRGBA(clr[0], clr[1], clr[2], 255/2));
-
-
     }
   } else {
     // Draw white vision track
-    //track_bg = nvgLinearGradient(s->vg, vwp_w, vwp_h, vwp_w, vwp_h*.4,
-    //  COLOR_WHITE, COLOR_WHITE_ALPHA(0));
-
     nColor1 = COLOR_WHITE;
     nColor2 = COLOR_WHITE_ALPHA(0);    
   }
@@ -334,7 +319,7 @@ static void ui_draw_track(UIState *s, bool is_mpc, track_vertices_data *pvd)
   nvgFillPaint(s->vg, track_bg);
   nvgFill(s->vg);
 }
-*/
+
 
 
 static void draw_steering(UIState *s, float curvature) {
