@@ -919,7 +919,7 @@ static void ui_draw_debug(UIState *s)
   nvgTextAlign(s->vg, NVG_ALIGN_LEFT | NVG_ALIGN_BASELINE);
   nvgFontSize(s->vg, 36*1.5*fFontSize);
 
-  snprintf(speed_str, sizeof(speed_str), "B:%d,%d", scene.brakePress, scene.brakeLights  );
+  snprintf(speed_str, sizeof(speed_str), "B:%d,%.5f", scene.steerOverride, scene.output_scale  );
   nvgText(s->vg, x_pos, y_pos+0, speed_str, NULL);
   snprintf(speed_str, sizeof(speed_str), "D:%d,%d", scene.leftBlinker, scene.rightBlinker  );
   nvgText(s->vg, x_pos, y_pos+50, speed_str, NULL);   
