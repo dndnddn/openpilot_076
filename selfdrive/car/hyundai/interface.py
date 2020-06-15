@@ -41,18 +41,18 @@ class CarInterface(CarInterfaceBase):
       ret.wheelbase = 2.845
 
       ret.steerActuatorDelay = 0.1  # Default delay
-      ret.steerRatio = 12.37  #12.5
-      ret.steerRateCost = 0.5 #0.4
-      ret.lateralTuning.pid.kf = 0.00003 
-      ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[9., 22.], [9., 22.]]
-      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.15, 0.20], [0.03, 0.04]]
-
-
-      #ret.steerRatio = 10.5  #12.5
-      #ret.steerRateCost = 0.01 #0.4
-      #ret.lateralTuning.pid.kf = 0.00001
+      #ret.steerRatio = 12.37  #12.5
+      #ret.steerRateCost = 0.5 #0.4
+      #ret.lateralTuning.pid.kf = 0.00003 
       #ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[9., 22.], [9., 22.]]
-      #ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.13, 0.14], [0.04, 0.05]]
+      #ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.15, 0.20], [0.03, 0.04]]
+
+
+      ret.steerRatio = 11.5  #12.5
+      ret.steerRateCost = 0.05 #0.4
+      ret.lateralTuning.pid.kf = 0.00001
+      ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[9., 22.], [9., 22.]]
+      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.15, 0.18], [0.02, 0.03]]
 
 
       # indi
