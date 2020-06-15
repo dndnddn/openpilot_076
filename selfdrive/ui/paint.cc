@@ -977,6 +977,15 @@ static void ui_draw_debug(UIState *s)
   snprintf(speed_str, sizeof(speed_str), "%s", scene.alert.text2 );
   nvgText(s->vg, 0, 1078, speed_str, NULL);
 
+
+  // Draw vision path
+  ui_draw_track(s, false, &s->track_vertices[0]);
+
+
+
+    // Draw MPC path when engaged
+  ui_draw_track(s, true, &s->track_vertices[1]);
+
 }
 
 
