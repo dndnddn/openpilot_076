@@ -214,8 +214,8 @@ static void update_all_track_data(UIState *s) {
 }
 
 
-/*
-static void ui_draw_track(UIState *s, bool is_mpc, track_vertices_data *pvd) {
+
+static void ui_draw_track1(UIState *s, bool is_mpc, track_vertices_data *pvd) {
 const UIScene *scene = &s->scene;
   const PathData path = scene->model.path;
   const float *mpc_x_coords = &scene->mpc_x[0];
@@ -273,16 +273,11 @@ const UIScene *scene = &s->scene;
   nvgFill(s->vg);
   nvgRestore(s->vg);
 }
-*/
 
-static void ui_draw_track(UIState *s, bool is_mpc, track_vertices_data *pvd) 
+
+static void ui_draw_track2(UIState *s, bool is_mpc, track_vertices_data *pvd) 
 {
   const UIScene *scene = &s->scene;
-
-  char  speed_str[512];
-  snprintf(speed_str, sizeof(speed_str), "%d", pvd->cnt );
-  nvgText(s->vg, 0, 200, speed_str, NULL);
-
 
 
   nvgBeginPath(s->vg);
@@ -301,22 +296,6 @@ static void ui_draw_track(UIState *s, bool is_mpc, track_vertices_data *pvd)
       nvgLineTo(s->vg, x, y);
     }
   }
-
-
-  for( i = 0;i <50;i++) {
-    float x = 100;
-    float y = i * 5;
-    if (x < 0 || y < 0) {
-      continue;
-    }
-    if (!started) {
-      nvgMoveTo(s->vg, x, y);
-      started = true;
-    } else {
-      nvgLineTo(s->vg, x, y);
-    }
-  }
-
   nvgClosePath(s->vg);
 
   NVGpaint track_bg;
@@ -345,6 +324,16 @@ static void ui_draw_track(UIState *s, bool is_mpc, track_vertices_data *pvd)
 }
 
 
+static void ui_draw_track(UIState *s, bool is_mpc, track_vertices_data *pvd) 
+{
+  const UIScene *scene = &s->scene;
+  float lead_d = scene->lead_d_rel*2.;
+
+  if( lead_d > 0 )
+    ui_draw_track1( s, is_mpc, pvd );
+  else
+    ui_draw_track2( s, is_mpc, pvd );
+}
 
 static void draw_steering(UIState *s, float curvature) {
   float points[50];
@@ -1000,15 +989,6 @@ static void ui_draw_debug(UIState *s)
 
   snprintf(speed_str, sizeof(speed_str), "%s", scene.alert.text2 );
   nvgText(s->vg, 0, 1078, speed_str, NULL);
-
-
-  // Draw vision path
-  ui_draw_track(s, false, &s->track_vertices[0]);
-
-
-
-    // Draw MPC path when engaged
-  ui_draw_track(s, true, &s->track_vertices[1]);
 
 }
 
