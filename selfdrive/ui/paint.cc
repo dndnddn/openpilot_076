@@ -280,7 +280,7 @@ static void ui_draw_track(UIState *s, bool is_mpc, track_vertices_data *pvd)
   const UIScene *scene = &s->scene;
 
   char  speed_str[512];
-  snprintf(speed_str, sizeof(speed_str), "%s", pvd->cnt );
+  snprintf(speed_str, sizeof(speed_str), "%d", pvd->cnt );
   nvgText(s->vg, 0, 200, speed_str, NULL);
 
 
