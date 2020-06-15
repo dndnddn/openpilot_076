@@ -275,15 +275,10 @@ const UIScene *scene = &s->scene;
 }
 
 
-static void ui_draw_track2(UIState *s, bool is_mpc, track_vertices_data *pvd) 
-{
-  const UIScene *scene = &s->scene;
-
-
+static void ui_draw_track2(UIState *s, bool is_mpc, track_vertices_data *pvd) {
   nvgBeginPath(s->vg);
   bool started = false;
-  int  i;
-  for( i = 0;i < pvd->cnt;i++) {
+  for(int i = 0;i < pvd->cnt;i++) {
     float x = pvd->v[i].x;
     float y = pvd->v[i].y;
     if (x < 0 || y < 0) {
@@ -299,26 +294,16 @@ static void ui_draw_track2(UIState *s, bool is_mpc, track_vertices_data *pvd)
   nvgClosePath(s->vg);
 
   NVGpaint track_bg;
-  NVGcolor nColor1 = COLOR_WHITE;
-  NVGcolor nColor2 = COLOR_WHITE_ALPHA(0);
   if (is_mpc) {
     // Draw colored MPC track
-    if (scene->steerOverride) {
-      nColor1 = nvgRGBA(0, 191, 255, 255);
-      nColor2 = nvgRGBA(0, 95, 128, 50);
-    } else {
-      const uint8_t *clr = bg_colors[s->status];
-      nColor1 = nvgRGBA(clr[0], clr[1], clr[2], 255);
-      nColor2 = nvgRGBA(clr[0], clr[1], clr[2], 255/2);
-    }
+    const uint8_t *clr = bg_colors[s->status];
+    track_bg = nvgLinearGradient(s->vg, vwp_w, vwp_h, vwp_w, vwp_h*.4,
+      nvgRGBA(clr[0], clr[1], clr[2], 255), nvgRGBA(clr[0], clr[1], clr[2], 255/2));
   } else {
     // Draw white vision track
-    nColor1 = COLOR_WHITE;
-    nColor2 = COLOR_WHITE_ALPHA(0);    
+    track_bg = nvgLinearGradient(s->vg, vwp_w, vwp_h, vwp_w, vwp_h*.4,
+      COLOR_WHITE, COLOR_WHITE_ALPHA(0));
   }
-
-  track_bg = nvgLinearGradient(s->vg, vwp_w, vwp_h, vwp_w, vwp_h*.4, nColor1, nColor2);
-
   nvgFillPaint(s->vg, track_bg);
   nvgFill(s->vg);
 }
