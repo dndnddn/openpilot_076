@@ -249,6 +249,9 @@ static void ui_draw_track(UIState *s, bool is_mpc, track_vertices_data *pvd)
       int torque_scale = (int)fabs(510*(float)scene->output_scale);
       int red_lvl = fmin(255, torque_scale);
       int green_lvl = fmin(255, 510-torque_scale);
+
+      red_lvl = 255;
+      green_lvl = 0;      
 /*      
       track_bg = nvgLinearGradient(s->vg, vwp_w, vwp_h, vwp_w, vwp_h*.4,
         nvgRGBA(          red_lvl,            green_lvl,  0, 255),
