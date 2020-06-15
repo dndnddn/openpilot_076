@@ -52,6 +52,8 @@ def dmonitoringd_thread(sm=None, pm=None):
           cal_rpy = sm['liveCalibration'].rpyCalib
 
     # Get interaction
+    standstill = True
+    cruiseState_enabled = True
     if sm.updated['carState']:
       vEgo = sm['carState'].vEgo
       v_cruise = sm['carState'].cruiseState.speed
