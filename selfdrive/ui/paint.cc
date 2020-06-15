@@ -235,7 +235,7 @@ static void ui_draw_track(UIState *s, bool is_mpc, track_vertices_data *pvd)
   nvgClosePath(s->vg);
 
   NVGpaint track_bg;
-  NVGcolor nColor1 = nvgRGBA( 255, 191, 255, 255); // COLOR_WHITE;
+  NVGcolor nColor1 = COLOR_WHITE;
   NVGcolor nColor2 = COLOR_WHITE_ALPHA(0);
   if (is_mpc) {
     // Draw colored MPC track
@@ -274,7 +274,7 @@ static void ui_draw_track(UIState *s, bool is_mpc, track_vertices_data *pvd)
     //track_bg = nvgLinearGradient(s->vg, vwp_w, vwp_h, vwp_w, vwp_h*.4,
     //  COLOR_WHITE, COLOR_WHITE_ALPHA(0));
 
-    nColor1 = COLOR_WHITE;
+    nColor1 = nvgRGBA( 255, 191, 255, 255); //  COLOR_WHITE;
     nColor2 = COLOR_WHITE_ALPHA(0);    
   }
 
