@@ -300,6 +300,22 @@ static void ui_draw_track(UIState *s, bool is_mpc, track_vertices_data *pvd)
       nvgLineTo(s->vg, x, y);
     }
   }
+
+  bool started = false;
+  for(int i = 0;i <20;i++) {
+    float x = 10;
+    float y = i * 5;
+    if (x < 0 || y < 0) {
+      continue;
+    }
+    if (!started) {
+      nvgMoveTo(s->vg, x, y);
+      started = true;
+    } else {
+      nvgLineTo(s->vg, x, y);
+    }
+  }
+
   nvgClosePath(s->vg);
 
   NVGpaint track_bg;
