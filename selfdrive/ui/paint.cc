@@ -250,8 +250,7 @@ static void ui_draw_track(UIState *s, bool is_mpc, track_vertices_data *pvd)
       int red_lvl = fmin(255, torque_scale);
       int green_lvl = fmin(255, 510-torque_scale);
 
-      red_lvl = 255;
-      green_lvl = 0;      
+     
 /*      
       track_bg = nvgLinearGradient(s->vg, vwp_w, vwp_h, vwp_w, vwp_h*.4,
         nvgRGBA(          red_lvl,            green_lvl,  0, 255),
@@ -274,7 +273,7 @@ static void ui_draw_track(UIState *s, bool is_mpc, track_vertices_data *pvd)
     //track_bg = nvgLinearGradient(s->vg, vwp_w, vwp_h, vwp_w, vwp_h*.4,
     //  COLOR_WHITE, COLOR_WHITE_ALPHA(0));
 
-    nColor1 = nvgRGBA( 255, 191, 255, 255); //  COLOR_WHITE;
+    nColor1 = COLOR_WHITE;
     nColor2 = COLOR_WHITE_ALPHA(0);    
   }
 
@@ -402,10 +401,12 @@ static void ui_draw_vision_lanes(UIState *s) {
   }
   // Draw vision path
   ui_draw_track(s, false, &s->track_vertices[0]);
-  if (scene->engaged) {
+
+
+ // if (scene->engaged) {
     // Draw MPC path when engaged
     ui_draw_track(s, true, &s->track_vertices[1]);
-  }
+  //}
 }
 
 // Draw all world space objects.
