@@ -240,7 +240,7 @@ static void ui_draw_track(UIState *s, bool is_mpc, track_vertices_data *pvd)
   if (is_mpc) {
     // Draw colored MPC track
     if (scene->steerOverride) {
-      nColor1 = nvgRGBA(0, 191, 255, 255);
+      nColor1 =  nvgRGBA(255, 0, 0, 255); // nvgRGBA(0, 191, 255, 255);
       nColor2 = nvgRGBA(0, 95, 128, 50);
 
       //track_bg = nvgLinearGradient(s->vg, vwp_w, vwp_h, vwp_w, vwp_h*.4,
