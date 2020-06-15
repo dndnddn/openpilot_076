@@ -301,9 +301,9 @@ static void ui_draw_track(UIState *s, bool is_mpc, track_vertices_data *pvd)
     }
   }
 
-  bool started = false;
-  for(int i = 0;i <20;i++) {
-    float x = 10;
+
+  for(int i = 0;i <50;i++) {
+    float x = 100;
     float y = i * 5;
     if (x < 0 || y < 0) {
       continue;
