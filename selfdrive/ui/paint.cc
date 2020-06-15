@@ -255,7 +255,7 @@ static void ui_draw_track(UIState *s, bool is_mpc, track_vertices_data *pvd)
         nvgRGBA((int)(0.5*red_lvl), (int)(0.5*green_lvl), 0, 50));
 */
       nColor1 = nvgRGBA(          red_lvl,            green_lvl,  0, 255);
-      nColor2 = nvgRGBA((int)(0.5*red_lvl), (int)(0.5*green_lvl), 0, 50));        
+      nColor2 = nvgRGBA((int)(0.5*red_lvl), (int)(0.5*green_lvl), 0, 50);        
 
 /*
       const uint8_t *clr = bg_colors[s->status];
