@@ -287,7 +287,8 @@ static void ui_draw_track(UIState *s, bool is_mpc, track_vertices_data *pvd)
 
   nvgBeginPath(s->vg);
   bool started = false;
-  for(int i = 0;i < pvd->cnt;i++) {
+  int  i;
+  for( i = 0;i < pvd->cnt;i++) {
     float x = pvd->v[i].x;
     float y = pvd->v[i].y;
     if (x < 0 || y < 0) {
@@ -302,7 +303,7 @@ static void ui_draw_track(UIState *s, bool is_mpc, track_vertices_data *pvd)
   }
 
 
-  for(int i = 0;i <50;i++) {
+  for( i = 0;i <50;i++) {
     float x = 100;
     float y = i * 5;
     if (x < 0 || y < 0) {
