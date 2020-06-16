@@ -218,38 +218,40 @@ static void update_all_track_data(UIState *s) {
 static void ui_draw_track1(UIState *s, bool is_mpc, track_vertices_data *pvd) 
 {
   const UIScene *scene = &s->scene;
-  const PathData path = scene->model.path;
-  const float *mpc_x_coords = &scene->mpc_x[0];
-  const float *mpc_y_coords = &scene->mpc_y[0];
+ // const PathData path = scene->model.path;
+ // const float *mpc_x_coords = &scene->mpc_x[0];
+ // const float *mpc_y_coords = &scene->mpc_y[0];
 
 
+/*
   bool started = false;
   float off = is_mpc?0.3:0.5;
   float lead_d = scene->lead_d_rel*2.;
   float path_height = is_mpc?(lead_d>5.)?fmin(lead_d, 25.)-fmin(lead_d*0.35, 10.):20.
                             :(lead_d>0.)?fmin(lead_d, 50.)-fmin(lead_d*0.35, 10.):49.;
 
-
   nvgSave(s->vg);
   nvgTranslate(s->vg, 240.0f, 0.0); // rgb-box space
   nvgTranslate(s->vg, -1440.0f / 2, -1080.0f / 2); // zoom 2x
   nvgScale(s->vg, 2.0, 2.0);
   nvgScale(s->vg, 1440.0f / s->rgb_width, 1080.0f / s->rgb_height);
-
+*/
 
 
   nvgBeginPath(s->vg);
-  int vi = 0;
-  for(int i = 0;i < pvd->cnt;i++) {
-    if (pvd->v[i].x < 0 || pvd->v[i].y < 0) {
+  bool started = false;
+  for(int i = 0;i < pvd->cnt;i++) 
+  {
+    float x = pvd->v[i].x;
+    float y = pvd->v[i].y;
+    if (x < 0 || y < 0) {
       continue;
     }
-
     if (!started) {
-      nvgMoveTo(s->vg, pvd->v[i].x, pvd->v[i].y);
+      nvgMoveTo(s->vg, x, y);
       started = true;
     } else {
-      nvgLineTo(s->vg, pvd->v[i].x, pvd->v[i].y);
+      nvgLineTo(s->vg, x, y);
     }
   }
   nvgClosePath(s->vg);
@@ -264,7 +266,7 @@ static void ui_draw_track1(UIState *s, bool is_mpc, track_vertices_data *pvd)
       track_bg = nvgLinearGradient(s->vg, vwp_w, vwp_h, vwp_w, vwp_h*.4,
         nvgRGBA(0, 191, 255, 255), nvgRGBA(0, 95, 128, 50));
     } else {
-      int torque_scale = (int)fabs(510*(float)s->scene.output_scale);
+      int torque_scale = (int)fabs(510*(float)scene->output_scale);
       int red_lvl = fmin(255, torque_scale);
       int green_lvl = fmin(255, 510-torque_scale);
       track_bg = nvgLinearGradient(s->vg, vwp_w, vwp_h, vwp_w, vwp_h*.4,
