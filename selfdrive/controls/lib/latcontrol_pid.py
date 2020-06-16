@@ -24,7 +24,9 @@ class LatControlPID():
       output_steer = 0.0
       pid_log.active = False
       self.pid.reset()
-      
+
+    else:
+     
 
       steers_max = get_steer_max(CP, CS.vEgo)
       self.pid.pos_limit = steers_max
