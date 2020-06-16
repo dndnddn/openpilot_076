@@ -48,20 +48,20 @@ class CarInterface(CarInterfaceBase):
       #ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.15, 0.20], [0.03, 0.04]]
 
       # 2번 튜닝.
-      #ret.steerRatio = 10.5  #12.5
-      #ret.steerRateCost = 0.35 #0.4
-      #ret.lateralTuning.pid.kf = 0.00001
-      #ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[9., 22.], [9., 22.]]
-      #ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.12, 0.13], [0.01, 0.01]]
+      ret.steerRatio = 10.5  #12.5
+      ret.steerRateCost = 0.35 #0.4
+      ret.lateralTuning.pid.kf = 0.00001
+      ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[9., 22.], [9., 22.]]
+      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.12, 0.13], [0.01, 0.01]]
 
 
       # indi
-      ret.lateralTuning.init('indi')
-      ret.lateralTuning.indi.innerLoopGain = 3.0
-      ret.lateralTuning.indi.outerLoopGain = 2.1
-      ret.lateralTuning.indi.timeConstant = 1.0
-      ret.lateralTuning.indi.actuatorEffectiveness = 1.5
-      ret.steerRatio = 9.0 
+      #ret.lateralTuning.init('indi')
+      #ret.lateralTuning.indi.innerLoopGain = 3.0
+      #ret.lateralTuning.indi.outerLoopGain = 2.1
+      #ret.lateralTuning.indi.timeConstant = 1.0
+      #ret.lateralTuning.indi.actuatorEffectiveness = 1.5
+      #ret.steerRatio = 9.0 
 
 
       #ret.steerActuatorDelay = 0.1 # Stinger GT Limited AWD 3.3T stock value (Tunder's 2020) 
