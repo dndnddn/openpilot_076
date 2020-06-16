@@ -19,13 +19,12 @@ class LatControlPID():
     pid_log.steerAngle = float(CS.steeringAngle)
     pid_log.steerRate = float(CS.steeringRate)
 
+    self.angle_steers_des = path_plan.angleSteers
     if CS.vEgo < 0.3 or not active:
       output_steer = 0.0
       pid_log.active = False
       self.pid.reset()
-      self.angle_steers_des = path_plan.angleSteers
-    else:
-      self.angle_steers_des = path_plan.angleSteers  # get from MPC/PathPlanner
+      
 
       steers_max = get_steer_max(CP, CS.vEgo)
       self.pid.pos_limit = steers_max
