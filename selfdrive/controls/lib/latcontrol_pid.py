@@ -56,7 +56,7 @@ class LatControlPID():
     self.steerKf2 = interp( cv_angle, cv, fKf2 )
 
     str1 = 'kp={},{}  ki={},{} kf={},{}'.format( fKp1, fKp2, fKi1, fKi2, fKf1, fKf2 )
-    trPID.add( str1 )
+    self.trPID.add( str1 )
 
     xp = CP.lateralTuning.pid.kpBP
     fp = [float(self.steerKf1), float(self.steerKf2) ]
