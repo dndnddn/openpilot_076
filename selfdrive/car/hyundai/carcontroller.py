@@ -29,7 +29,7 @@ class CarController():
     self.steer_torque_over_timer = 0
     self.steer_torque_ratio = 1
     self.steer_torque_ratio_dir = 1
-    self.steer_torque_active = 0
+
 
     self.timer1 = tm.CTime1000("CarController")
 
@@ -101,7 +101,7 @@ class CarController():
     new_steer = actuators.steer * param.STEER_MAX
     apply_steer = apply_std_steer_torque_limits(new_steer, self.apply_steer_last, CS.out.steeringTorque, param)
     self.steer_rate_limited = new_steer != apply_steer
-    self.steer_torque_active = apply_steer
+
 
 
     # streer over check
@@ -139,8 +139,7 @@ class CarController():
       self.steer_torque_ratio = 1
 
     if self.steer_torque_ratio < 1:
-      self.steer_torque_active *= min( 1, self.steer_torque_ratio )
-      apply_steer_limit = int(self.steer_torque_active * param.STEER_MAX)
+      apply_steer_limit = int(self.steer_torque_ratio * param.STEER_MAX)
       apply_steer = self.limit_ctrl( apply_steer, apply_steer_limit, 0 )
 
     if not lkas_active:
