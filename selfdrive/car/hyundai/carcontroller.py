@@ -115,7 +115,7 @@ class CarController():
       self.steer_torque_over_timer -= 1
  
     # disable if steer angle reach 90 deg, otherwise mdps fault in some models
-    lkas_active = enabled and abs(CS.out.steeringAngle) < 100. #and self.lkas_button
+    lkas_active = enabled and abs(CS.out.steeringAngle) < 90. #and self.lkas_button
 
     # fix for Genesis hard fault at low speed
     if CS.out.vEgo < 16.7 and self.car_fingerprint == CAR.HYUNDAI_GENESIS:
@@ -146,14 +146,14 @@ class CarController():
     if not lkas_active:
       apply_steer = 0
 
-
+    steer_req = 1 if apply_steer else 0
 
     self.apply_steer_last = apply_steer
 
     sys_warning, sys_state = self.process_hud_alert( lkas_active, visual_alert, left_lane, right_lane )
 
     can_sends = []
-    can_sends.append(create_lkas11(self.packer, frame, self.car_fingerprint, apply_steer, lkas_active,
+    can_sends.append(create_lkas11(self.packer, frame, self.car_fingerprint, apply_steer, steer_req,
                                    CS.lkas11, sys_warning, sys_state, enabled,
                                    left_lane, right_lane  ))
 
