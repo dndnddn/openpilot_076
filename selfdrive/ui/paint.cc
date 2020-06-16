@@ -229,9 +229,6 @@ static void ui_draw_track1(UIState *s, bool is_mpc, track_vertices_data *pvd)
   float path_height = is_mpc?(lead_d>5.)?fmin(lead_d, 25.)-fmin(lead_d*0.35, 10.):20.
                             :(lead_d>0.)?fmin(lead_d, 50.)-fmin(lead_d*0.35, 10.):49.;
 
-  char speed_str[512];
-  snprintf(speed_str, sizeof(speed_str), "%d draw_track:%d,  p=%.1f", is_mpc, pvd->cnt,  path_height  );
-  nvgText(s->vg, 0, 200+ is_mpc*50, speed_str, NULL);
 
   nvgSave(s->vg);
   nvgTranslate(s->vg, 240.0f, 0.0); // rgb-box space
@@ -326,9 +323,9 @@ static void ui_draw_track(UIState *s, bool is_mpc, track_vertices_data *pvd)
   const UIScene *scene = &s->scene;
   float lead_d = scene->lead_d_rel*2.;
 
-  if( lead_d > 0 )
-    ui_draw_track1( s, is_mpc, pvd );
-  else
+ // if( lead_d > 0 )
+  //  ui_draw_track1( s, is_mpc, pvd );
+  //else
     ui_draw_track2( s, is_mpc, pvd );
 }
 
