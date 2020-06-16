@@ -228,7 +228,7 @@ static void ui_draw_track1(UIState *s, bool is_mpc, track_vertices_data *pvd)
   nvgTranslate(s->vg, -1440.0f / 2, -1080.0f / 2); // zoom 2x
   nvgScale(s->vg, 2.0, 2.0);
   nvgScale(s->vg, 1440.0f / s->rgb_width, 1080.0f / s->rgb_height);
-  nvgRestore(s->vg);
+  //nvgRestore(s->vg);
 
 
   nvgBeginPath(s->vg);
