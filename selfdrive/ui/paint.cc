@@ -222,23 +222,26 @@ static void ui_draw_track1(UIState *s, bool is_mpc, track_vertices_data *pvd)
   const float *mpc_x_coords = &scene->mpc_x[0];
   const float *mpc_y_coords = &scene->mpc_y[0];
 
-/*
-  nvgSave(s->vg);
-  nvgTranslate(s->vg, 240.0f, 0.0); // rgb-box space
-  nvgTranslate(s->vg, -1440.0f / 2, -1080.0f / 2); // zoom 2x
-  nvgScale(s->vg, 2.0, 2.0);
-  nvgScale(s->vg, 1440.0f / s->rgb_width, 1080.0f / s->rgb_height);
-*/
 
-
-  nvgBeginPath(s->vg);
   bool started = false;
   float off = is_mpc?0.3:0.5;
   float lead_d = scene->lead_d_rel*2.;
   float path_height = is_mpc?(lead_d>5.)?fmin(lead_d, 25.)-fmin(lead_d*0.35, 10.):20.
                             :(lead_d>0.)?fmin(lead_d, 50.)-fmin(lead_d*0.35, 10.):49.;
 
+  char speed_str[512];
+  snprintf(speed_str, sizeof(speed_str), "%d draw_track:%d,  p=%.1f", is_mpc, pvd->cnt,  path_height  );
+  nvgText(s->vg, 0, 200+ is_mpc*50, speed_str, NULL);
 
+  nvgSave(s->vg);
+  nvgTranslate(s->vg, 240.0f, 0.0); // rgb-box space
+  nvgTranslate(s->vg, -1440.0f / 2, -1080.0f / 2); // zoom 2x
+  nvgScale(s->vg, 2.0, 2.0);
+  nvgScale(s->vg, 1440.0f / s->rgb_width, 1080.0f / s->rgb_height);
+
+
+
+  nvgBeginPath(s->vg);
   int vi = 0;
   for(int i = 0;i < pvd->cnt;i++) {
     if (pvd->v[i].x < 0 || pvd->v[i].y < 0) {
@@ -254,9 +257,7 @@ static void ui_draw_track1(UIState *s, bool is_mpc, track_vertices_data *pvd)
   }
   nvgClosePath(s->vg);
 
-  char speed_str[512];
-  snprintf(speed_str, sizeof(speed_str), "%d draw_track:%d,  p=%.1f", is_mpc, pvd->cnt,  path_height  );
-  nvgText(s->vg, 0, 200+ is_mpc*50, speed_str, NULL);
+
 
 
   NVGpaint track_bg;
