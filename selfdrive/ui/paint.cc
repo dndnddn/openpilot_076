@@ -222,13 +222,13 @@ static void ui_draw_track1(UIState *s, bool is_mpc, track_vertices_data *pvd)
   const float *mpc_x_coords = &scene->mpc_x[0];
   const float *mpc_y_coords = &scene->mpc_y[0];
 
-
+/*
   nvgSave(s->vg);
   nvgTranslate(s->vg, 240.0f, 0.0); // rgb-box space
   nvgTranslate(s->vg, -1440.0f / 2, -1080.0f / 2); // zoom 2x
   nvgScale(s->vg, 2.0, 2.0);
   nvgScale(s->vg, 1440.0f / s->rgb_width, 1080.0f / s->rgb_height);
-  //nvgRestore(s->vg);
+*/
 
 
   nvgBeginPath(s->vg);
