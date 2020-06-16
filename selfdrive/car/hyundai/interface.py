@@ -5,6 +5,8 @@ from selfdrive.car.hyundai.values import Ecu, ECU_FINGERPRINT, CAR, FINGERPRINTS
 from selfdrive.car import STD_CARGO_KG, scale_rot_inertia, scale_tire_stiffness, is_ecu_disconnected, gen_empty_fingerprint
 from selfdrive.car.interfaces import CarInterfaceBase, MAX_CTRL_SPEED
 
+from selfdrive.kegman_conf import kegman_conf
+
 EventName = car.CarEvent.EventName
 ButtonType = car.CarState.ButtonEvent.Type
 class CarInterface(CarInterfaceBase):
@@ -14,6 +16,38 @@ class CarInterface(CarInterfaceBase):
 
     self.meg_timer = 0
     self.meg_name = 0
+
+    self.steer_Kf1 = [0.00003,0.00003]    
+    self.steer_Ki1 = [0.02,0.04]
+    self.steer_Kp1 = [0.18,0.20]
+
+    self.steer_Kf2 = [0.00005,0.00005]
+    self.steer_Ki2 = [0.04,0.05]
+    self.steer_Kp2 = [0.20,0.25]
+
+    self.deadzone = 0.0
+
+    self.steerAngleOffset = 1
+    self.load_tune()
+
+
+  @staticmethod
+  def load_tune(self):
+    # live tuning through /data/openpilot/tune.py overrides interface.py settings
+    self.kegman = kegman_conf()
+
+    self.steer_Kp1 = [ float(self.kegman.conf['Kp']), float(self.kegman.conf['sR_Kp']) ]
+    self.steer_Ki1 = [ float(self.kegman.conf['Ki']), float(self.kegman.conf['sR_Ki']) ]
+    self.steer_Kf1 = [ float(self.kegman.conf['Kf']), float(self.kegman.conf['sR_Kf']) ]
+
+    self.steer_Kp2 = [ float(self.kegman.conf['Kp2']), float(self.kegman.conf['sR_Kp2']) ]
+    self.steer_Ki2 = [ float(self.kegman.conf['Ki2']), float(self.kegman.conf['sR_Ki2']) ]
+    self.steer_Kf2 = [ float(self.kegman.conf['Kf2']), float(self.kegman.conf['sR_Kf2']) ]        
+
+    self.deadzone = float(self.kegman.conf['deadzone'])
+    self.steerAngleOffset = float(self.kegman.conf['steerAngleOffset'])
+
+
 
   @staticmethod
   def compute_gb(accel, speed):
@@ -64,11 +98,11 @@ class CarInterface(CarInterfaceBase):
       #ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.15, 0.20], [0.03, 0.04]]
 
       # 2번 튜닝.
-      ret.steerRatio = 10.5  #12.5
+      ret.steerRatio = 10.0  #12.5
       ret.steerRateCost = 0.4 #0.4
       ret.lateralTuning.pid.kf = 0.00001
       ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[9., 22.], [9., 22.]]
-      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.12, 0.13], [0.01, 0.01]]
+      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.12, 0.15], [0.01, 0.02]]
 
 
       # indi
