@@ -30,10 +30,26 @@ class CarInterface(CarInterfaceBase):
     # Hyundai port is a community feature for now
     ret.communityFeature = False  #True
 
+    """
+      0.7.5
+      ret.steerActuatorDelay = 0.1  # Default delay   0.1
+      ret.steerRateCost = 0.5
+      ret.steerLimitTimer = 0.4
+      tire_stiffness_factor = 1
+    """
+
+    """
+      0.7.3
+      ret.steerActuatorDelay = 0.10  # Default delay   0.15
+      ret.steerRateCost = 0.45
+      ret.steerLimitTimer = 0.8
+      tire_stiffness_factor = 0.7
+    """
+
     ret.steerActuatorDelay = 0.1  # Default delay
-    ret.steerRateCost = 0.5
-    ret.steerLimitTimer = 0.4
-    tire_stiffness_factor = 1.
+    ret.steerRateCost = 0.45
+    ret.steerLimitTimer = 0.8
+    tire_stiffness_factor = 0.7.
 
 
     if candidate == CAR.GRANDEUR_HYBRID:
@@ -49,7 +65,7 @@ class CarInterface(CarInterfaceBase):
 
       # 2번 튜닝.
       ret.steerRatio = 10.5  #12.5
-      ret.steerRateCost = 0.35 #0.4
+      ret.steerRateCost = 0.1 #0.4
       ret.lateralTuning.pid.kf = 0.00001
       ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[9., 22.], [9., 22.]]
       ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.12, 0.13], [0.01, 0.01]]
