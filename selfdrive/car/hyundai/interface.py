@@ -31,10 +31,11 @@ class CarInterface(CarInterfaceBase):
     self.load_tune()
 
 
-  @staticmethod
+  #@staticmethod
   def load_tune(self):
     # live tuning through /data/openpilot/tune.py overrides interface.py settings
     self.kegman = kegman_conf()
+
 
     self.steer_Kp1 = [ float(self.kegman.conf['Kp']), float(self.kegman.conf['sR_Kp']) ]
     self.steer_Ki1 = [ float(self.kegman.conf['Ki']), float(self.kegman.conf['sR_Ki']) ]
@@ -45,9 +46,14 @@ class CarInterface(CarInterfaceBase):
     self.steer_Kf2 = [ float(self.kegman.conf['Kf2']), float(self.kegman.conf['sR_Kf2']) ]        
 
     self.deadzone = float(self.kegman.conf['deadzone'])
-    self.steerAngleOffset = float(self.kegman.conf['steerAngleOffset'])
 
 
+    try:
+      self.steerAngleOffset = float(self.kegman.conf['steerAngleOffset'])
+    except:
+      self.steerAngleOffset = 0
+    finally:  # try end 
+      pass   
 
   @staticmethod
   def compute_gb(accel, speed):

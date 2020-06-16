@@ -51,6 +51,8 @@ class kegman_conf():
       if "tuneGernby" not in self.config:
         self.config.update({"tuneGernby":"1"})
         self.config.update({"deadzone":"0.0"})
+        self.config.update({"steerAngleOffset":"0.0"})
+
 
       if "Kp" not in self.config:
         self.config.update({"Kp":"-1"})
