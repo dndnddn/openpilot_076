@@ -103,10 +103,10 @@ class CarInterface(CarInterfaceBase):
 
       # 2번 튜닝.
       ret.steerRatio = 12.0  #12.5
-      ret.steerRateCost = 0.4 #0.4
+      ret.steerRateCost = 0.45 #0.4
       ret.lateralTuning.pid.kf = 0.00001
       ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[9., 22.], [9., 22.]]
-      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.12, 0.15], [0.01, 0.02]]
+      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.12, 0.15], [0.02, 0.02]]
 
 
       # indi
