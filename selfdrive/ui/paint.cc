@@ -124,7 +124,7 @@ static void draw_lead(UIState *s, float d_rel, float v_rel, float y_rel){
     }
     fillAlpha = (int)(fmin(fillAlpha, 255));
   }
-  draw_chevron(s, d_rel, y_rel, 25, nvgRGBA(201, 34, 49, fillAlpha), COLOR_YELLOW);
+  draw_chevron(s, d_rel+2.7, y_rel, 25, nvgRGBA(201, 34, 49, fillAlpha), COLOR_YELLOW);
 }
 
 static void ui_draw_lane_line(UIState *s, const model_path_vertices_data *pvd, NVGcolor color) {
@@ -218,25 +218,6 @@ static void update_all_track_data(UIState *s) {
 static void ui_draw_track1(UIState *s, bool is_mpc, track_vertices_data *pvd) 
 {
   const UIScene *scene = &s->scene;
- // const PathData path = scene->model.path;
- // const float *mpc_x_coords = &scene->mpc_x[0];
- // const float *mpc_y_coords = &scene->mpc_y[0];
-
-
-/*
-  bool started = false;
-  float off = is_mpc?0.3:0.5;
-  float lead_d = scene->lead_d_rel*2.;
-  float path_height = is_mpc?(lead_d>5.)?fmin(lead_d, 25.)-fmin(lead_d*0.35, 10.):20.
-                            :(lead_d>0.)?fmin(lead_d, 50.)-fmin(lead_d*0.35, 10.):49.;
-
-  nvgSave(s->vg);
-  nvgTranslate(s->vg, 240.0f, 0.0); // rgb-box space
-  nvgTranslate(s->vg, -1440.0f / 2, -1080.0f / 2); // zoom 2x
-  nvgScale(s->vg, 2.0, 2.0);
-  nvgScale(s->vg, 1440.0f / s->rgb_width, 1080.0f / s->rgb_height);
-*/
-
 
   nvgBeginPath(s->vg);
   bool started = false;
@@ -255,8 +236,6 @@ static void ui_draw_track1(UIState *s, bool is_mpc, track_vertices_data *pvd)
     }
   }
   nvgClosePath(s->vg);
-
-
 
 
   NVGpaint track_bg;
@@ -281,7 +260,7 @@ static void ui_draw_track1(UIState *s, bool is_mpc, track_vertices_data *pvd)
 
   nvgFillPaint(s->vg, track_bg);
   nvgFill(s->vg);
-  nvgRestore(s->vg);
+
 }
 
 
@@ -322,13 +301,13 @@ static void ui_draw_track2(UIState *s, bool is_mpc, track_vertices_data *pvd)
 
 static void ui_draw_track(UIState *s, bool is_mpc, track_vertices_data *pvd) 
 {
-  const UIScene *scene = &s->scene;
-  float lead_d = scene->lead_d_rel*2.;
+  //const UIScene *scene = &s->scene;
+ // float lead_d = scene->lead_d_rel*2.;
 
  // if( lead_d > 0 )
-  //  ui_draw_track1( s, is_mpc, pvd );
+    ui_draw_track1( s, is_mpc, pvd );
   //else
-    ui_draw_track2( s, is_mpc, pvd );
+  //  ui_draw_track2( s, is_mpc, pvd );
 }
 
 static void draw_steering(UIState *s, float curvature) {
