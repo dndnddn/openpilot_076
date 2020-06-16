@@ -5,6 +5,8 @@ from cereal import log
 
 from common.numpy_fast import interp
 
+import common.log as trace1
+
 class LatControlPID():
   def __init__(self, CP):
     self.pid = PIController((CP.lateralTuning.pid.kpBP, CP.lateralTuning.pid.kpV),
@@ -12,7 +14,7 @@ class LatControlPID():
                             k_f=CP.lateralTuning.pid.kf, pos_limit=1.0, sat_limit=CP.steerLimitTimer)
     self.angle_steers_des = 0.
 
-
+    self.trPID = trace1.Loger("pid")
 
 
   def reset(self):
@@ -41,6 +43,9 @@ class LatControlPID():
     fKf2 = [float(CP.steer_Kf2[ 0 ]), float(CP.steer_Kf2[ 1 ]) ]
     self.steerKf1 = interp( cv_angle, cv, fKf1 )
     self.steerKf2 = interp( cv_angle, cv, fKf2 )
+
+    str1 = 'kp={},{}  ki={},{} kf={},{}'.format( fKp1, fKp2, fKi1, fKi2, fKf1, fKf2 )
+    trPID.add( str1 )
 
     xp = CP.lateralTuning.pid.kpBP
     fp = [float(self.steerKf1), float(self.steerKf2) ]
@@ -72,7 +77,7 @@ class LatControlPID():
         # TODO: feedforward something based on path_plan.rateSteers
         steer_feedforward -= path_plan.angleOffset   # subtract the offset, since it does not contribute to resistive torque
         steer_feedforward *= CS.vEgo**2  # proportional to realigning tire momentum (~ lateral accel)
-      deadzone = 0.0
+      deadzone = CP.deadzone
 
       check_saturation = (CS.vEgo > 10) and not CS.steeringRateLimited and not CS.steeringPressed
       output_steer = self.pid.update(self.angle_steers_des, CS.steeringAngle, check_saturation=check_saturation, override=CS.steeringPressed,

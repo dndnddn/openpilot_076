@@ -17,8 +17,8 @@ class CarInterface(CarInterfaceBase):
     self.meg_timer = 0
     self.meg_name = 0
 
-    self.steer_Kf1 = [0.00003,0.00003]    
-    self.steer_Ki1 = [0.02,0.04]
+    self.steer_Kf1 = [0.00001,0.00001]    
+    self.steer_Ki1 = [0.01,0.02]
     self.steer_Kp1 = [0.18,0.20]
 
     self.steer_Kf2 = [0.00005,0.00005]
