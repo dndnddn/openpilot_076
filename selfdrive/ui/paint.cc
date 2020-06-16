@@ -256,7 +256,7 @@ static void ui_draw_track1(UIState *s, bool is_mpc, track_vertices_data *pvd)
   nvgClosePath(s->vg);
 
   char speed_str[512];
-  snprintf(speed_str, sizeof(speed_str), "%d draw_track:%d, %.1f,%.1f, p=%.1f",is_mpc, pvd->cnt, s->rgb_width, s->rgb_height, path_height  );
+  snprintf(speed_str, sizeof(speed_str), "%d draw_track:%d,  p=%.1f", is_mpc, pvd->cnt,  path_height  );
   nvgText(s->vg, 0, 200+ is_mpc*50, speed_str, NULL);
 
 
