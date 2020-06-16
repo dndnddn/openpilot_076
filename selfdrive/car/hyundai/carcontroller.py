@@ -97,6 +97,10 @@ class CarController():
     if abs_angle_steers < 1 or v_ego_kph < 5:
         param.STEER_DELTA_UP  = 1
         param.STEER_DELTA_DOWN = 2
+    else:
+        param.STEER_DELTA_UP  = 2
+        param.STEER_DELTA_DOWN = 3
+
 
     new_steer = actuators.steer * param.STEER_MAX
     apply_steer = apply_std_steer_torque_limits(new_steer, self.apply_steer_last, CS.out.steeringTorque, param)
