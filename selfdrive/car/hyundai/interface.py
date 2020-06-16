@@ -49,7 +49,7 @@ class CarInterface(CarInterfaceBase):
     ret.steerActuatorDelay = 0.1  # Default delay
     ret.steerRateCost = 0.45
     ret.steerLimitTimer = 0.8
-    tire_stiffness_factor = 0.7.
+    tire_stiffness_factor = 0.7
 
 
     if candidate == CAR.GRANDEUR_HYBRID:
