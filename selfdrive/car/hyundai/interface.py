@@ -24,14 +24,12 @@ class CarInterface(CarInterfaceBase):
     self.steer_Kf2 = [0.00005,0.00005]
     self.steer_Ki2 = [0.04,0.05]
     self.steer_Kp2 = [0.20,0.25]
-
     self.deadzone = 0.0
-
     self.steerAngleOffset = 1
     #self.load_tune( CP )
 
 
-  #@staticmethod
+  @staticmethod
   def load_tune(self, CP):
     # live tuning through /data/openpilot/tune.py overrides interface.py settings
     self.kegman = kegman_conf(CP)

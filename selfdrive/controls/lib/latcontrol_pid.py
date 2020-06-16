@@ -17,6 +17,17 @@ class LatControlPID():
     self.trPID = trace1.Loger("pid")
 
 
+    self.steer_Kf1 = [0.00001,0.00001]    
+    self.steer_Ki1 = [0.01,0.02]
+    self.steer_Kp1 = [0.12,0.15]
+
+    self.steer_Kf2 = [0.00005,0.00005]
+    self.steer_Ki2 = [0.04,0.05]
+    self.steer_Kp2 = [0.20,0.25]
+    self.deadzone = 0.0
+    self.steerAngleOffset = 1
+
+
   def reset(self):
     self.pid.reset()
 
@@ -25,22 +36,22 @@ class LatControlPID():
     cv_angle = abs(self.angle_steers_des)
     cv = [ 1, 30 ]  # angle
     # Kp
-    fKp1 = [float(CP.steer_Kp1[ 0 ]), float(CP.steer_Kp1[ 1 ]) ]
-    fKp2 = [float(CP.steer_Kp2[ 0 ]), float(CP.steer_Kp2[ 1 ]) ]
+    fKp1 = [float(self.steer_Kp1[ 0 ]), float(self.steer_Kp1[ 1 ]) ]
+    fKp2 = [float(self.steer_Kp2[ 0 ]), float(self.steer_Kp2[ 1 ]) ]
     self.steerKp1 = interp( cv_angle, cv, fKp1 )
     self.steerKp2 = interp( cv_angle, cv, fKp2 )
     self.steerKpV = [ float(self.steerKp1), float(self.steerKp2) ]
 
     # Ki
-    fKi1 = [float(CP.steer_Ki1[ 0 ]), float(CP.steer_Ki1[ 1 ]) ]
-    fKi2 = [float(CP.steer_Ki2[ 0 ]), float(CP.steer_Ki2[ 1 ]) ]
+    fKi1 = [float(self.steer_Ki1[ 0 ]), float(self.steer_Ki1[ 1 ]) ]
+    fKi2 = [float(self.steer_Ki2[ 0 ]), float(self.steer_Ki2[ 1 ]) ]
     self.steerKi1 = interp( cv_angle, cv, fKi1 )
     self.steerKi2 = interp( cv_angle, cv, fKi2 )
     self.steerKiV = [ float(self.steerKi1), float(self.steerKi2) ]
 
     # kf
-    fKf1 = [float(CP.steer_Kf1[ 0 ]), float(CP.steer_Kf1[ 1 ]) ]
-    fKf2 = [float(CP.steer_Kf2[ 0 ]), float(CP.steer_Kf2[ 1 ]) ]
+    fKf1 = [float(self.steer_Kf1[ 0 ]), float(self.steer_Kf1[ 1 ]) ]
+    fKf2 = [float(self.steer_Kf2[ 0 ]), float(self.steer_Kf2[ 1 ]) ]
     self.steerKf1 = interp( cv_angle, cv, fKf1 )
     self.steerKf2 = interp( cv_angle, cv, fKf2 )
 
