@@ -27,7 +27,8 @@ class CarState(CarStateBase):
     self.Mdps_ToiUnavail = 0
 
     self.left_blinker_flash = 0
-    self.right_blinker_flash = 0    
+    self.right_blinker_flash = 0  
+    self.steerWarning = 0  
 
 
   def update(self, cp, cp_cam):
@@ -84,25 +85,33 @@ class CarState(CarStateBase):
     self.Mdps_ToiUnavail = cp.vl["MDPS12"]['CF_Mdps_ToiUnavail']
     ret.vEgo = self.clu_Vanz * CV.KPH_TO_MS
 
-    if ret.vEgo > 5:    
-      ret.steerWarning = self.Mdps_ToiUnavail != 0
+
+    
+    steerWarning = False
+    if ret.vEgo < 5 or not self.Mdps_ToiUnavail:
+      self.steerWarning = 0
+    elif self.steerWarning >= 2:
+      steerWarning = True
     else:
-      ret.steerWarning = False
+      self.steerWarning += 1
 
-
+    ret.steerWarning = steerWarning
+    
 
     # cruise state
+    ret.cruiseState.available = self.main_on
+    ret.cruiseState.enabled =  ret.cruiseState.available  #if not self.CC.longcontrol else ret.cruiseState.enabled
+
+
     #ret.cruiseState.available = True
     #ret.cruiseState.enabled = cp.vl["SCC12"]['ACCMode'] != 0
     self.main_on = (cp.vl["SCC11"]["MainMode_ACC"] != 0)
     self.acc_active = (cp.vl["SCC12"]['ACCMode'] != 0)
 
-    ret.cruiseState.available = self.main_on
-    #ret.cruiseState.enabled = self.acc_active
+
     ret.cruiseState.standstill = cp.vl["SCC11"]['SCCInfoDisplay'] == 4.
 
     # most HKG cars has no long control, it is safer and easier to engage by main on
-    ret.cruiseState.enabled =  ret.cruiseState.available  #if not self.CC.longcontrol else ret.cruiseState.enabled
 
     #if ret.cruiseState.enabled:
     if self.acc_active:
@@ -176,8 +185,10 @@ class CarState(CarStateBase):
 
 
     # atom append
+    self.pcm_acc_status = int(self.acc_active)
+    self.driverOverride = cp.vl["TCS13"]["DriverOverride"]     # 1 Acc,  2 bracking, 0 Normal
     self.cruise_main_button = cp.vl["CLU11"]["CF_Clu_CruiseSwMain"]
-    self.cruise_buttons = cp.vl["CLU11"]["CF_Clu_CruiseSwState"]      
+    self.cruise_buttons = cp.vl["CLU11"]["CF_Clu_CruiseSwState"]         # clu_CruiseSwState
     self.Lkas_LdwsSysState = cp_cam.vl["LKAS11"]["CF_Lkas_LdwsSysState"]
     self.lkas_error = self.Lkas_LdwsSysState  == 7
     if not self.lkas_error:

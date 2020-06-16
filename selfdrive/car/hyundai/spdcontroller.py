@@ -93,6 +93,9 @@ class SpdController():
 
         self.SC = trace1.Loger("spd")
 
+
+        self.wait_timer2 = 0
+
     def reset(self):
         self.v_model = 0
         self.a_model = 0
@@ -137,10 +140,37 @@ class SpdController():
 
 
 
-    #lead_1 = sm['radarState'].leadOne
-    #lead_2 = sm['radarState'].leadTwo
-    #enabled = (long_control_state == LongCtrlState.pid) or (long_control_state == LongCtrlState.stopping)
-    #following = lead_1.status and lead_1.dRel < 45.0 and lead_1.vLeadK > v_ego and lead_1.aLeadK > 0.0
+    def speed_control(self, CS, v_ego_kph, sm, actuators, dRel, yRel, vRel ):
+        if CS.driverOverride == 2 or not CS.pcm_acc_status or CS.cruise_buttons == 1 or CS.cruise_buttons == 2:
+            self.resume_cnt = 0
+            self.btn_type = Buttons.NONE
+            self.wait_timer2 = 10
+            self.active_timer2 = 0
+        elif self.wait_timer2:
+            self.wait_timer2 -= 1
+        else:
+            btn_type, clu_speed = self.update( v_ego_kph, CS, sm, actuators, dRel, yRel, vRel )   # speed controller spdcontroller.py
+
+            if CS.clu_Vanz < 5:
+                self.btn_type = Buttons.NONE
+            elif self.btn_type != Buttons.NONE:
+                pass
+            elif btn_type != Buttons.NONE:
+                self.resume_cnt = 0
+                self.active_timer2 = 0
+                self.btn_type = btn_type
+                self.clu_speed = clu_speed
+
+            if self.btn_type != Buttons.NONE:
+                self.active_timer2 += 1
+                if self.active_timer2 > 10:
+                    self.wait_timer2 = 5
+                    self.resume_cnt = 0
+                    self.active_timer2 = 0
+                    self.btn_type = Buttons.NONE          
+                else:
+                    return 1
+        return  0   
 
     @staticmethod
     def get_lead( sm ):
@@ -158,30 +188,12 @@ class SpdController():
         return dRel, yRel, vRel
 
 
-    @staticmethod
-    def get_radarState( sm ):
-        lead_1 = sm['radarState'].leadOne
-
-        if lead_1.status:
-            dRel = lead_1.dRel
-            vRel = lead_1.vRel
-            yRel = lead_1.yRel
-        else:
-            dRel = 150
-            yRel = 0
-            vRel = 0
-
-
-        return dRel, yRel, vRel
-
 
     def get_tm_speed(self, CS, set_time, add_val, safety_dis=5):
         time = int(set_time)
 
         delta_speed = CS.VSetDis - CS.clu_Vanz
-
         set_speed = int(CS.VSetDis) + add_val
-
         
         if add_val > 0:  # 증가
             if delta_speed > safety_dis:
@@ -306,6 +318,7 @@ class SpdController():
         wait_time_cmd = 0
         set_speed = CS.cruise_set_speed_kph
 
+        
         # 2. 커브 감속.
         if CS.cruise_set_speed_kph >= 70:
             if model_speed < 80:
@@ -323,7 +336,7 @@ class SpdController():
 
         return wait_time_cmd, set_speed
 
-    def update(self, v_ego_kph, CS, sm, actuators, dRel, yRel, vRel, model_speed):
+    def update(self, v_ego_kph, CS, sm, actuators, dRel, yRel, vRel):
         btn_type = Buttons.NONE
         #lead_1 = sm['radarState'].leadOne
         long_wait_cmd = 500
@@ -339,6 +352,7 @@ class SpdController():
         lead_wait_cmd, lead_set_speed = self.update_lead( CS,  dRel, yRel, vRel)  
 
         # 커브 감속.
+        model_speed = self.calc_va( CS.out.vEgo )
         curv_wait_cmd, curv_set_speed = self.update_curv(CS, sm, model_speed)
 
         if curv_wait_cmd != 0:
