@@ -37,6 +37,15 @@ class CarController():
     self.hud_timer_left = 0
     self.hud_timer_right = 0
 
+  def limit_ctrl(self, value, limit, offset ):
+      p_limit = offset + limit
+      m_limit = offset - limit
+      if value > p_limit:
+          value = p_limit
+      elif  value < m_limit:
+          value = m_limit
+      return value
+
 
   def process_hud_alert(self, enabled, visual_alert, left_lane, right_lane):
     sys_warning = (visual_alert == VisualAlert.steerRequired)
@@ -57,7 +66,7 @@ class CarController():
     # initialize to no line visible
     sys_state = 1
     if self.hud_timer_left and self.hud_timer_right or sys_warning:  # HUD alert only display when LKAS status is active
-      if (self.steer_torque_ratio > 0.8) and (enabled or sys_warning):
+      if (self.steer_torque_ratio > 0.5) and (enabled or sys_warning):
         sys_state = 3
       else:
         sys_state = 4
@@ -131,7 +140,8 @@ class CarController():
 
     if self.steer_torque_ratio < 1:
       self.steer_torque_active *= min( 1, self.steer_torque_ratio )
-      apply_steer = int(self.steer_torque_active)
+      apply_steer_limit = int(self.steer_torque_active * param.STEER_MAX)
+      apply_steer = self.limit_ctrl( apply_steer, apply_steer_limit, 0 )
 
     if not lkas_active:
       apply_steer = 0

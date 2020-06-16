@@ -263,7 +263,7 @@ static void ui_draw_track1(UIState *s, bool is_mpc, track_vertices_data *pvd)
 
 }
 
-
+//Standard MPC
 static void ui_draw_track2(UIState *s, bool is_mpc, track_vertices_data *pvd) 
 {
   nvgBeginPath(s->vg);
