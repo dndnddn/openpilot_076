@@ -157,7 +157,7 @@ class CarController():
                                    CS.lkas11, sys_warning, sys_state, enabled,
                                    left_lane, right_lane  ))
 
-    if not CS.main_on or (not steer_req and not CS.Mdps_ToiUnavail):
+    if not CS.Mdps_ToiUnavail:
       can_sends.append(create_mdps12(self.packer, frame, CS.mdps12))
 
 
