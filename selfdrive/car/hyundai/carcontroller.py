@@ -152,10 +152,10 @@ class CarController():
 
 
     dRel, yRel, vRel = SpdController.get_lead( sm )
-    dRel2, yRel2, vRel2 = SpdController.get_radarState( sm )
+    #dRel2, yRel2, vRel2 = SpdController.get_radarState( sm )
     
 
-    str_log1 = 'torg:{:5.0f} C={:.1f}/{:.1f} V={:.1f}/{:.1f} V2={:.1f}/{:.1f}'.format(  apply_steer, CS.lead_objspd, CS.lead_distance, dRel, vRel, dRel2, vRel2  )
+    str_log1 = 'torg:{:5.0f} C={:.1f}/{:.1f} V={:.1f}/{:.1f} '.format(  apply_steer, CS.lead_objspd, CS.lead_distance, dRel, vRel )
     str_log2 = 'steer={:5.0f} U={:.0f}  LK={:.0f} Ratio={:.1f} LC={} tm={:.1f}'.format( CS.out.steeringTorque, CS.Mdps_ToiUnavail, CS.lkas_button_on, self.steer_torque_ratio, path_plan.laneChangeState, self.timer1.sampleTime()  )
     trace1.printf( '{} {}'.format( str_log1, str_log2 ) )
 
