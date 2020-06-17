@@ -19,7 +19,7 @@ class LatControlPID():
 
     self.steer_Kp2 = [0.20,0.20]
     self.steer_Ki2 = [0.02,0.02]
-    self.steer_Kf2 = [0.00005,0.00005]
+    self.steer_Kf2 = [0.00003,0.00005]
 
 
     str1 = 'kp={},{} ki={},{} kf={},{}'.format( self.steer_Kp1, self.steer_Kp2, self.steer_Ki1, self.steer_Ki2, self.steer_Kf1, self.steer_Kf2 )
