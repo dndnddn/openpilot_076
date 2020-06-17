@@ -41,7 +41,8 @@ class kegman_conf():
 
     if os.path.isfile('/data/kegman.json'):
       with open('/data/kegman.json', 'r') as f:
-        self.config = json.load(f)
+        str_kegman = f.read()
+        self.config = json.load(str_kegman)
 
       if "battPercOff" not in self.config:
         self.config.update({"battPercOff":"30"})
