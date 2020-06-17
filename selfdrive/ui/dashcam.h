@@ -252,7 +252,7 @@ void draw_date_time(UIState *s)
   nvgFontSize(s->vg, 50*fFontSize);
   nvgFontFace(s->vg, "sans-semibold");
  // nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 200));
-  nvgText(s->vg, rect_x + 790, 10, now, NULL);
+  nvgText(s->vg, rect_x + 790, 20, now, NULL);
 }
 
 
@@ -299,7 +299,7 @@ static void screen_draw_button(UIState *s, int touch_x, int touch_y)
     {
       nvgFillColor(s->vg, nvgRGBA(255, 150, 150, 200));
     }
-    nvgText(s->vg, btn_x - 70, btn_y + 50, "REC", NULL);
+    nvgText(s->vg, btn_x - 75, btn_y + 50, "REC", NULL);
   }
 
   if (captureState == CAPTURE_STATE_CAPTURING)
