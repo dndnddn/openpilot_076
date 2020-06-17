@@ -231,7 +231,7 @@ void draw_date_time(UIState *s)
 
  // int rect_w = 465;
  // int rect_h = 80;
-  int rect_x = 1517;//  (1920 - rect_w) / 2;
+ // int rect_x = 1517;//  (1920 - rect_w) / 2;
   //int rect_y = (1080 - rect_h - 10);
 
   // Get local time to display
@@ -252,7 +252,7 @@ void draw_date_time(UIState *s)
   nvgFontSize(s->vg, 40*fFontSize);
   nvgFontFace(s->vg, "sans-semibold");
  // nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 200));
-  nvgText(s->vg, rect_x + 790, 20, now, NULL);
+  nvgText(s->vg, 1517, 20, now, NULL);
 }
 
 
