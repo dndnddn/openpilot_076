@@ -109,6 +109,12 @@ class CarInterface(CarInterfaceBase):
       ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[9., 22.], [9., 22.]]
       ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.12, 0.15], [0.02, 0.02]]
 
+      ret.lateralTuning_sR.kf = 0.00005
+      ret.lateralTuning_sR.sRBP = [4, 30.]
+      ret.lateralTuning_sR.kpV = [0.12, 0.15]
+      ret.lateralTuning_sR.kiV = [0.02, 0.02]
+
+
       # indi
       #ret.lateralTuning.init('indi')
       #ret.lateralTuning.indi.innerLoopGain = 3.0
