@@ -249,10 +249,10 @@ void draw_date_time(UIState *s)
   nvgStroke(s->vg);
 */
 
-  nvgFontSize(s->vg, 60*fFontSize);
+  nvgFontSize(s->vg, 50*fFontSize);
   nvgFontFace(s->vg, "sans-semibold");
  // nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 200));
-  nvgText(s->vg, rect_x + 300, rect_y + 55, now, NULL);
+  nvgText(s->vg, rect_x + 500, rect_y + 55, now, NULL);
 }
 
 

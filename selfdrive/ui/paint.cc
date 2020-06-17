@@ -305,9 +305,9 @@ static void ui_draw_track(UIState *s, bool is_mpc, track_vertices_data *pvd)
  // float lead_d = scene->lead_d_rel*2.;
 
  // if( lead_d > 0 )
-    ui_draw_track1( s, is_mpc, pvd );
+  //  ui_draw_track1( s, is_mpc, pvd );
   //else
-  //  ui_draw_track2( s, is_mpc, pvd );
+    ui_draw_track2( s, is_mpc, pvd );
 }
 
 static void draw_steering(UIState *s, float curvature) {
