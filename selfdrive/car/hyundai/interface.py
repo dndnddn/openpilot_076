@@ -17,6 +17,7 @@ class CarInterface(CarInterfaceBase):
     self.meg_timer = 0
     self.meg_name = 0
 
+"""
     self.steer_Kf1 = [0.00001,0.000015]    
     self.steer_Ki1 = [0.01,0.01]
     self.steer_Kp1 = [0.11,0.12]
@@ -52,6 +53,7 @@ class CarInterface(CarInterfaceBase):
       self.steerAngleOffset = 0
     finally:  # try end 
       pass   
+"""
 
   @staticmethod
   def compute_gb(accel, speed):
@@ -85,9 +87,9 @@ class CarInterface(CarInterfaceBase):
     """
 
     ret.steerActuatorDelay = 0.1  # Default delay
-    ret.steerRateCost = 0.45
-    ret.steerLimitTimer = 0.8
-    tire_stiffness_factor = 0.7
+    ret.steerRateCost = 0.5
+    ret.steerLimitTimer = 0.4
+    tire_stiffness_factor = 1.
 
 
     if candidate == CAR.GRANDEUR_HYBRID:
@@ -102,12 +104,11 @@ class CarInterface(CarInterfaceBase):
       #ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.15, 0.20], [0.03, 0.04]]
 
       # 2번 튜닝.
-      ret.steerRatio = 12.0  #12.5
+      ret.steerRatio = 11.5  #12.5
       ret.steerRateCost = 0.45 #0.4
       ret.lateralTuning.pid.kf = 0.00001
       ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[9., 22.], [9., 22.]]
       ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.12, 0.15], [0.02, 0.02]]
-
 
       # indi
       #ret.lateralTuning.init('indi')

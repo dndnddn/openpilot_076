@@ -31,7 +31,7 @@ class CarController():
     self.steer_torque_ratio_dir = 1
 
 
-    self.timer1 = tm.CTime1000("CarController")
+    self.timer1 = tm.CTime1000("time")
 
     # hud
     self.hud_timer_left = 0

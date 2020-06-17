@@ -14,18 +14,20 @@ class LatControlPID():
                             k_f=CP.lateralTuning.pid.kf, pos_limit=1.0, sat_limit=CP.steerLimitTimer)
     self.angle_steers_des = 0.
 
-    self.trPID = trace1.Loger("pid")
 
-
-    self.steer_Kf1 = [0.00001,0.00001]    
-    self.steer_Ki1 = [0.02,0.02]
     self.steer_Kp1 = [0.12,0.12]
+    self.steer_Ki1 = [0.02,0.02]
+    self.steer_Kf1 = [0.00001,0.00001]
 
-    self.steer_Kf2 = [0.00005,0.00005]
-    self.steer_Ki2 = [0.03,0.03]
     self.steer_Kp2 = [0.20,0.25]
-    self.deadzone = 0.0
-    self.steerAngleOffset = 1
+    self.steer_Ki2 = [0.03,0.03]
+    self.steer_Kf2 = [0.00005,0.00005]
+
+
+    str1 = 'kp={},{} ki={},{} kf={:.6f},{:.6f}'.format( self.steer_Kp1, self.steer_Kp2, self.steer_Ki1, self.steer_Ki2, self.steer_Kf1, self.steer_Kf2 )
+    str2 = 'steerRatio={} steerRateCost={}'.format( CP.steerRatio, CP.steerRateCost )
+    self.trPID = trace1.Loger("pid")    
+    self.trPID.add( '{} {}'.format( str1, str2 ) )
 
 
   def reset(self):
@@ -55,8 +57,6 @@ class LatControlPID():
     self.steerKf1 = interp( cv_angle, cv, fKf1 )
     self.steerKf2 = interp( cv_angle, cv, fKf2 )
 
-    str1 = 'kp={},{}  ki={},{} kf={},{}'.format( fKp1, fKp2, fKi1, fKi2, fKf1, fKf2 )
-    self.trPID.add( str1 )
 
     xp = CP.lateralTuning.pid.kpBP
     fp = [float(self.steerKf1), float(self.steerKf2) ]
@@ -88,7 +88,7 @@ class LatControlPID():
         # TODO: feedforward something based on path_plan.rateSteers
         steer_feedforward -= path_plan.angleOffset   # subtract the offset, since it does not contribute to resistive torque
         steer_feedforward *= CS.vEgo**2  # proportional to realigning tire momentum (~ lateral accel)
-      deadzone = self.deadzone
+      deadzone = 0.0
 
       check_saturation = (CS.vEgo > 10) and not CS.steeringRateLimited and not CS.steeringPressed
       output_steer = self.pid.update(self.angle_steers_des, CS.steeringAngle, check_saturation=check_saturation, override=CS.steeringPressed,
