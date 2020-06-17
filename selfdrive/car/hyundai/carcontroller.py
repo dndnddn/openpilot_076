@@ -96,8 +96,8 @@ class CarController():
     param = SteerLimitParams()
 
     if abs_angle_steers < 1 or v_ego_kph < 5:
-        param.STEER_DELTA_UP  = 1
-        param.STEER_DELTA_DOWN = 2
+        param.STEER_DELTA_UP  = 2
+        param.STEER_DELTA_DOWN = 3
 
 
 
@@ -132,12 +132,16 @@ class CarController():
       self.steer_torque_ratio = 1
 
     apply_steer_limit = param.STEER_MAX
-    if self.steer_torque_ratio < 1:
+    if not left_lane  and not right_lane:
+      apply_steer *= 0.5
+      if self.steer_torque_ratio > 0.5:
+        self.steer_torque_ratio = 0.5
+    elif self.steer_torque_ratio < 1:
       apply_steer_limit = int(self.steer_torque_ratio * param.STEER_MAX)
       apply_steer = self.limit_ctrl( apply_steer, apply_steer_limit, 0 )
 
 
- 
+
     # disable if steer angle reach 90 deg, otherwise mdps fault in some models
     lkas_active = enabled and abs(CS.out.steeringAngle) < 90. #and self.lkas_button
 
@@ -153,6 +157,8 @@ class CarController():
     self.apply_steer_last = apply_steer
 
     sys_warning, sys_state = self.process_hud_alert( lkas_active, visual_alert, left_lane, right_lane )
+
+
 
     can_sends = []
     if frame == 0: # initialize counts from last received count signals
