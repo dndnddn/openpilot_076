@@ -23,7 +23,7 @@ class LatControlPID():
 
 
     str1 = 'kp={},{} ki={},{} kf={},{}'.format( self.steer_Kp1, self.steer_Kp2, self.steer_Ki1, self.steer_Ki2, self.steer_Kf1, self.steer_Kf2 )
-    str2 = 'steerRatio={} steerRateCost={}'.format( CP.steerRatio, CP.steerRateCost )
+    str2 = 'steerRatio={:.3f} steerRateCost={:.5f}'.format( CP.steerRatio, CP.steerRateCost )
     self.trPID = trace1.Loger("pid")    
     self.trPID.add( '{} {}'.format( str1, str2 ) )
 
