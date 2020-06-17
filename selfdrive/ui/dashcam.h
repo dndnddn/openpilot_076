@@ -19,6 +19,8 @@ typedef struct dashcam_element
 
 dashcam_element lock_button;
 
+extern float  fFontSize;
+
 int captureState = CAPTURE_STATE_NOT_CAPTURING;
 int captureNum = 0;
 int start_time = 0;
@@ -245,7 +247,7 @@ void draw_date_time(UIState *s)
   nvgStrokeWidth(s->vg, 6);
   nvgStroke(s->vg);
 
-  nvgFontSize(s->vg, 60);
+  nvgFontSize(s->vg, 60*fFontSize);
   nvgFontFace(s->vg, "sans-semibold");
   nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 200));
   nvgText(s->vg, rect_x + 231, rect_y + 55, now, NULL);
@@ -278,7 +280,7 @@ static void screen_draw_button(UIState *s, int touch_x, int touch_y)
     nvgStrokeWidth(s->vg, 6);
     nvgStroke(s->vg);
 
-    nvgFontSize(s->vg, 60);
+    nvgFontSize(s->vg, 60*fFontSize);
 
     if ( lock_current_video == false )
     {
