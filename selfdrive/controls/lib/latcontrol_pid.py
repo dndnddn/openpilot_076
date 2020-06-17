@@ -36,7 +36,7 @@ class LatControlPID():
 
   def linear2_tune( self, CP, v_ego ):  # angle(조향각에 의한 변화)
     cv_angle = abs(self.angle_steers_des)
-    cv = [ 1, 30 ]  # angle
+    cv = [ 2, 30 ]  # angle
     # Kp
     fKp1 = [float(self.steer_Kp1[ 0 ]), float(self.steer_Kp1[ 1 ]) ]
     fKp2 = [float(self.steer_Kp2[ 0 ]), float(self.steer_Kp2[ 1 ]) ]
