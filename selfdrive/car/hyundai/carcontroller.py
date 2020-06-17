@@ -133,13 +133,14 @@ class CarController():
     # smoth torque enable or disable
     if self.steer_torque_ratio_dir >= 1:
       if self.steer_torque_ratio < 1:
-        self.steer_torque_ratio += 0.005
+        self.steer_torque_ratio += 0.001
     elif self.steer_torque_ratio_dir <= -1:
       if self.steer_torque_ratio > 0:
-        self.steer_torque_ratio -= 0.005
+        self.steer_torque_ratio -= 0.001
     else:
       self.steer_torque_ratio = 1
 
+    apply_steer_limit = param.STEER_MAX
     if self.steer_torque_ratio < 1:
       apply_steer_limit = int(self.steer_torque_ratio * param.STEER_MAX)
       apply_steer = self.limit_ctrl( apply_steer, apply_steer_limit, 0 )
@@ -168,7 +169,7 @@ class CarController():
     
 
     str_log1 = 'torg:{:5.0f} C={:.1f}/{:.1f} V={:.1f}/{:.1f} '.format(  apply_steer, CS.lead_objspd, CS.lead_distance, dRel, vRel )
-    str_log2 = 'Ratio={:.1f} LC={} tm={:.1f}'.format( self.steer_torque_ratio, path_plan.laneChangeState, self.timer1.sampleTime()  )
+    str_log2 = 'limit={:.1f} LC={} tm={:.1f}'.format( apply_steer_limit, path_plan.laneChangeState, self.timer1.sampleTime()  )
     trace1.printf( '{} {}'.format( str_log1, str_log2 ) )
 
     str_log2 = 'U={:.0f}  LK={:.0f} steer={:5.0f} '.format( CS.Mdps_ToiUnavail, CS.lkas_button_on, CS.out.steeringTorque  )
