@@ -21,6 +21,7 @@ class CarController():
     self.packer = CANPacker(dbc_name)
     self.steer_rate_limited = False
     self.resume_cnt = 0
+    self.lkas11_cnt = 0
     self.last_resume_frame = 0
     self.last_lead_distance = 0
 
@@ -110,25 +111,15 @@ class CarController():
     if v_ego_kph > 5 and abs( CS.out.steeringTorque ) > 180:  #사용자 핸들 토크
       self.steer_torque_over_timer = 200
 
-
     if path_plan.laneChangeState != LaneChangeState.off:
       self.steer_torque_over_timer = 0
     elif self.steer_torque_over_timer:
       self.steer_torque_over_timer -= 1
  
-    # disable if steer angle reach 90 deg, otherwise mdps fault in some models
-    lkas_active = enabled and abs(CS.out.steeringAngle) < 90. #and self.lkas_button
-
-    # fix for Genesis hard fault at low speed
-    if CS.out.vEgo < 16.7 and self.car_fingerprint == CAR.HYUNDAI_GENESIS:
-      lkas_active = 0
-
- 
     if self.steer_torque_over_timer:  #or CS.out.steerWarning:
       self.steer_torque_ratio_dir = -1
     else:
       self.steer_torque_ratio_dir = 1
-
 
     # smoth torque enable or disable
     if self.steer_torque_ratio_dir >= 1:
@@ -146,6 +137,14 @@ class CarController():
       apply_steer = self.limit_ctrl( apply_steer, apply_steer_limit, 0 )
 
 
+ 
+    # disable if steer angle reach 90 deg, otherwise mdps fault in some models
+    lkas_active = enabled and abs(CS.out.steeringAngle) < 90. #and self.lkas_button
+
+    # fix for Genesis hard fault at low speed
+    if CS.out.vEgo < 16.7 and self.car_fingerprint == CAR.HYUNDAI_GENESIS:
+      lkas_active = 0
+
     if not lkas_active:
       apply_steer = 0
 
@@ -156,7 +155,12 @@ class CarController():
     sys_warning, sys_state = self.process_hud_alert( lkas_active, visual_alert, left_lane, right_lane )
 
     can_sends = []
-    can_sends.append(create_lkas11(self.packer, frame, self.car_fingerprint, apply_steer, steer_req,
+    if frame == 0: # initialize counts from last received count signals
+      self.lkas11_cnt = CS.lkas11["CF_Lkas_MsgCount"] + 1
+
+    self.lkas11_cnt %= 0x10
+
+    can_sends.append(create_lkas11(self.packer, self.lkas11_cnt, self.car_fingerprint, apply_steer, steer_req,
                                    CS.lkas11, sys_warning, sys_state, enabled,
                                    left_lane, right_lane  ))
 
@@ -200,5 +204,7 @@ class CarController():
     if frame % 5 == 0 and self.car_fingerprint in [CAR.SONATA, CAR.PALISADE]:
       can_sends.append(create_lfa_mfa(self.packer, frame, enabled))
 
+    # counter inc
+    self.lkas11_cnt += 1
     return can_sends
 
