@@ -268,8 +268,6 @@ static void screen_draw_button(UIState *s, int touch_x, int touch_y)
   //  if (s->vision_connected && s->plus_state == 0) {
   if (s->vision_connected)
   {
-
-
     int btn_w = 150;
     int btn_h = 150;
     int btn_x = 1920 - btn_w;
@@ -302,7 +300,7 @@ static void screen_draw_button(UIState *s, int touch_x, int touch_y)
 
   if (captureState == CAPTURE_STATE_CAPTURING)
   {
-    //draw_date_time(s);
+    draw_date_time(s);
     elapsed_time = get_time() - start_time;
     if (elapsed_time >= RECORD_INTERVAL)
     {
@@ -367,7 +365,7 @@ void dashcam(UIState *s, int touch_x, int touch_y)
   }
   else if( lock_current_video == true  )
   {
-    if( s->scene.v_ego < 2.9 || !s->scene.engaged )
+    if( 0 && (s->scene.v_ego < 2.9 || !s->scene.engaged) )
     {
       if( captureState == CAPTURE_STATE_CAPTURING )
       {
