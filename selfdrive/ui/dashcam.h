@@ -252,7 +252,7 @@ void draw_date_time(UIState *s)
   nvgFontSize(s->vg, 40*fFontSize);
   nvgFontFace(s->vg, "sans-semibold");
  // nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 200));
-  nvgText(s->vg, 1590, 22, now, NULL);
+  nvgText(s->vg, 1600, 22, now, NULL);
 }
 
 
