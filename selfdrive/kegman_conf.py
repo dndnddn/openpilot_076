@@ -1,4 +1,4 @@
-import json
+import json11
 import os
 
 class kegman_conf():
@@ -41,7 +41,7 @@ class kegman_conf():
 
     if os.path.isfile('/data/kegman.json'):
       with open('/data/kegman.json', 'r') as f:
-        self.config = json.load(f)
+        self.config = json11.load(f)
 
       if "battPercOff" not in self.config:
         self.config.update({"battPercOff":"30"})
@@ -101,10 +101,10 @@ class kegman_conf():
   def write_config(self, config):
     try:
       with open('/data/kegman.json', 'w') as f:
-        json.dump(self.config, f, indent=2, sort_keys=True)
+        json11.dump(self.config, f, indent=2, sort_keys=True)
         os.chmod("/data/kegman.json", 0o764)
     except IOError:
       os.mkdir('/data')
       with open('/data/kegman.json', 'w') as f:
-        json.dump(self.config, f, indent=2, sort_keys=True)
+        json11.dump(self.config, f, indent=2, sort_keys=True)
         os.chmod("/data/kegman.json", 0o764)
