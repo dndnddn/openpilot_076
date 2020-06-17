@@ -134,7 +134,8 @@ while True:
       j = len(param) - 1
 
   elif (char == "z"):
-    process.kill()
+    #process.kill()
+    exit(1) 
     break
 
 
