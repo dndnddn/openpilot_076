@@ -9,9 +9,7 @@ import common.log as trace1
 
 class LatControlPID():
   def __init__(self, CP):
-    self.pid = PIController((CP.lateralTuning.pid.kpBP, CP.lateralTuning.pid.kpV),
-                            (CP.lateralTuning.pid.kiBP, CP.lateralTuning.pid.kiV),
-                            k_f=CP.lateralTuning.pid.kf, pos_limit=1.0, sat_limit=CP.steerLimitTimer)
+
     self.angle_steers_des = 0.
 
 
@@ -29,6 +27,12 @@ class LatControlPID():
     self.trPID = trace1.Loger("pid")    
     self.trPID.add( '{} {}'.format( str1, str2 ) )
 
+    CP.lateralTuning.pid.kf  = self.steer_Kf1[0]
+    CP.lateralTuning.pid.kiV = self.steer_Ki1
+    CP.lateralTuning.pid.kpV = self.steer_Kp1
+    self.pid = PIController((CP.lateralTuning.pid.kpBP, CP.lateralTuning.pid.kpV),
+                            (CP.lateralTuning.pid.kiBP, CP.lateralTuning.pid.kiV),
+                            k_f=CP.lateralTuning.pid.kf, pos_limit=1.0, sat_limit=CP.steerLimitTimer)
 
   def reset(self):
     self.pid.reset()
@@ -36,7 +40,7 @@ class LatControlPID():
 
   def linear2_tune( self, CP, v_ego ):  # angle(조향각에 의한 변화)
     cv_angle = abs(self.angle_steers_des)
-    cv = [ 2, 30 ]  # angle
+    cv = [ 4, 30 ]  # angle
     # Kp
     fKp1 = [float(self.steer_Kp1[ 0 ]), float(self.steer_Kp1[ 1 ]) ]
     fKp2 = [float(self.steer_Kp2[ 0 ]), float(self.steer_Kp2[ 1 ]) ]
