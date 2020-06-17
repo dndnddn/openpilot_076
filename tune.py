@@ -255,4 +255,5 @@ while True:
   time.sleep(button_delay)
 
 else:
-  process.kill()
+  exit(1)
+  #process.kill()
