@@ -310,11 +310,13 @@ class CarInterface(CarInterfaceBase):
       if self.meg_timer:
         self.meg_timer -= 1
         meg_timer = 0
-      #elif not self.CS.lkas_button_on:
-      #  self.meg_name = EventName.invalidLkasSetting
-        #events.add( EventName.invalidLkasSetting )
+      elif not self.CS.lkas_button_on:
+        self.meg_name = EventName.invalidLkasSetting
+        events.add( EventName.invalidLkasSetting )
       elif self.CC.steer_torque_over_timer:
         self.meg_name = EventName.steerTorqueOver
+      elif self.CC.steer_torque_ratio < 0.5:
+        self.meg_name = EventName.steerTorqueLow
       elif ret.vEgo > MAX_CTRL_SPEED:
         self.meg_name = EventName.speedTooHigh
       elif ret.steerError:

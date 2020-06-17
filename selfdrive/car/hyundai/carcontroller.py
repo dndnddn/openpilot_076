@@ -67,7 +67,7 @@ class CarController():
     # initialize to no line visible
     sys_state = 1
     if self.hud_timer_left and self.hud_timer_right or sys_warning:  # HUD alert only display when LKAS status is active
-      if (self.steer_torque_ratio > 0.5) and (enabled or sys_warning):
+      if (self.steer_torque_ratio > 0.7) and (enabled or sys_warning):
         sys_state = 3
       else:
         sys_state = 4
@@ -112,12 +112,15 @@ class CarController():
       self.steer_torque_over_timer = 200
 
     if path_plan.laneChangeState != LaneChangeState.off:
+      self.steer_torque_ratio_dir = 1
       self.steer_torque_over_timer = 0
-    elif self.steer_torque_over_timer:
-      self.steer_torque_over_timer -= 1
- 
-    if self.steer_torque_over_timer:  #or CS.out.steerWarning:
+    elif self.steer_torque_over_timer:  #or CS.out.steerWarning:
       self.steer_torque_ratio_dir = -1
+    elif not left_lane  and not right_lane:
+      if self.steer_torque_ratio > 0.2:
+        self.steer_torque_ratio_dir = -1
+      else:
+        self.steer_torque_ratio_dir = 0  # 유지.
     else:
       self.steer_torque_ratio_dir = 1
 
@@ -128,18 +131,12 @@ class CarController():
     elif self.steer_torque_ratio_dir <= -1:
       if self.steer_torque_ratio > 0:
         self.steer_torque_ratio -= 0.001
-    else:
-      self.steer_torque_ratio = 1
+
 
     apply_steer_limit = param.STEER_MAX
-    if not left_lane  and not right_lane:
-      apply_steer *= 0.5
-      if self.steer_torque_ratio > 0.5:
-        self.steer_torque_ratio = 0.5
-    elif self.steer_torque_ratio < 1:
+    if self.steer_torque_ratio < 1:
       apply_steer_limit = int(self.steer_torque_ratio * param.STEER_MAX)
       apply_steer = self.limit_ctrl( apply_steer, apply_steer_limit, 0 )
-
 
 
     # disable if steer angle reach 90 deg, otherwise mdps fault in some models
@@ -179,7 +176,7 @@ class CarController():
     
 
     str_log1 = 'torg:{:5.0f} C={:.1f}/{:.1f} V={:.1f}/{:.1f} '.format(  apply_steer, CS.lead_objspd, CS.lead_distance, dRel, vRel )
-    str_log2 = 'limit={:.1f} LC={} tm={:.1f}'.format( apply_steer_limit, path_plan.laneChangeState, self.timer1.sampleTime()  )
+    str_log2 = 'limit={:.0f} LC={} tm={:.1f}'.format( apply_steer_limit, path_plan.laneChangeState, self.timer1.sampleTime()  )
     trace1.printf( '{} {}'.format( str_log1, str_log2 ) )
 
     str_log2 = 'U={:.0f}  LK={:.0f} steer={:5.0f} '.format( CS.Mdps_ToiUnavail, CS.lkas_button_on, CS.out.steeringTorque  )

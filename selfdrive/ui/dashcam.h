@@ -369,7 +369,7 @@ void dashcam(UIState *s, int touch_x, int touch_y)
   }
   else if( lock_current_video == true  )
   {
-    if( 0 && (s->scene.v_ego < 2.9 || !s->scene.engaged) )
+    if(  (s->scene.v_ego < 2.9 || !s->scene.engaged) )
     {
       if( captureState == CAPTURE_STATE_CAPTURING )
       {
