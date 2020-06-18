@@ -31,6 +31,9 @@ class CarController():
     self.steer_torque_ratio = 1
     self.steer_torque_ratio_dir = 1
 
+    self.dRel = 0
+    self.yRel = 0
+    self.vRel = 0
 
     self.timer1 = tm.CTime1000("time")
 
@@ -48,7 +51,11 @@ class CarController():
       return value
 
 
-  def process_hud_alert(self, enabled, visual_alert, left_lane, right_lane):
+  def process_hud_alert(self, enabled, CC ):
+    visual_alert = CC.hudControl.visualAlert
+    left_lane = CC.hudControl.leftLaneVisible
+    right_lane = CC.hudControl.rightLaneVisible
+
     sys_warning = (visual_alert == VisualAlert.steerRequired)
 
     if left_lane:
@@ -78,42 +85,25 @@ class CarController():
 
     return sys_warning, sys_state
 
-
-  def update(self, CC, CS, frame,  sm ):
-    enabled = CC.enabled
-    actuators = CC.actuators
-    pcm_cancel_cmd = CC.cruiseControl.cancel
-    visual_alert = CC.hudControl.visualAlert
-    left_lane = CC.hudControl.leftLaneVisible
-    right_lane = CC.hudControl.rightLaneVisible
-    path_plan = sm['pathPlan']
-
-
-    abs_angle_steers =  abs(actuators.steerAngle)
-    v_ego_kph = CS.out.vEgo * CV.MS_TO_KPH
-    dRel, yRel, vRel = SpdController.get_lead( sm )
-
-    # Steering Torque
+  def steerParams_torque(self, CS, abs_angle_steers, path_plan, CC ):
     param = SteerLimitParams()
+    v_ego_kph = CS.out.vEgo * CV.MS_TO_KPH
 
+    # 직선 코스
     if abs_angle_steers < 1 or v_ego_kph < 5:
         param.STEER_DELTA_UP  = 2
         param.STEER_DELTA_DOWN = 3
 
-
-    new_steer = actuators.steer * param.STEER_MAX
-    apply_steer = apply_std_steer_torque_limits(new_steer, self.apply_steer_last, CS.out.steeringTorque, param)
-    self.steer_rate_limited = new_steer != apply_steer
-
-
     # streer over check
     if v_ego_kph > 5 and abs( CS.out.steeringTorque ) > 180:  #사용자 핸들 토크
-      self.steer_torque_over_timer = 200
+      self.steer_torque_over_timer = 1
+    else:
+      self.steer_torque_over_timer = 0
 
-    if self.steer_torque_over_timer:
-      self.steer_torque_over_timer -= 1
+    # 차선이 없고 앞차량이 없으면.
+    steer_angle_lower = self.dRel > 80 and (not CC.hudControl.leftLaneVisible  and not CC.hudControl.rightLaneVisible)
 
-    if v_ego_kph < 1: 
+    if v_ego_kph < 1:
       self.steer_torque_over_timer = 0
       self.steer_torque_ratio_dir = 1
     elif path_plan.laneChangeState != LaneChangeState.off:
@@ -121,13 +111,10 @@ class CarController():
       self.steer_torque_over_timer = 0
     elif self.steer_torque_over_timer:  #or CS.out.steerWarning:
       self.steer_torque_ratio_dir = -1
-      self.steer_torque_ratio -= 0.05
-    elif dRel > 80 and (not left_lane  and not right_lane):
-      if self.steer_torque_ratio > 0.2:
-        self.steer_torque_ratio -= 0.1
-        self.steer_torque_ratio_dir = -1
-      else:
-        self.steer_torque_ratio_dir = 0  # 유지.
+    elif steer_angle_lower:  
+      param.STEER_DELTA_UP  = 1
+      param.STEER_DELTA_DOWN = 2
+      self.steer_torque_ratio_dir = 1
     else:
       self.steer_torque_ratio_dir = 1
 
@@ -143,6 +130,32 @@ class CarController():
       self.steer_torque_ratio = 0.1
     elif self.steer_torque_ratio > 1:
       self.steer_torque_ratio = 1
+
+    return  param
+
+
+
+  def update(self, CC, CS, frame,  sm ):
+    enabled = CC.enabled
+    actuators = CC.actuators
+    pcm_cancel_cmd = CC.cruiseControl.cancel
+
+
+    path_plan = sm['pathPlan']
+
+    abs_angle_steers =  abs(actuators.steerAngle)
+
+    self.dRel, self.yRel, self.vRel = SpdController.get_lead( sm )
+
+
+    # Steering Torque
+    #param = SteerLimitParams()
+    param = self.steerParams_torque( CS, abs_angle_steers, path_plan, CC )
+
+
+    new_steer = actuators.steer * param.STEER_MAX
+    apply_steer = apply_std_steer_torque_limits(new_steer, self.apply_steer_last, CS.out.steeringTorque, param)
+    self.steer_rate_limited = new_steer != apply_steer
 
     apply_steer_limit = param.STEER_MAX
     if self.steer_torque_ratio < 1:
@@ -164,33 +177,23 @@ class CarController():
 
     self.apply_steer_last = apply_steer
 
-    sys_warning, sys_state = self.process_hud_alert( lkas_active, visual_alert, left_lane, right_lane )
-
-
+    sys_warning, sys_state = self.process_hud_alert( lkas_active, CC )
 
     can_sends = []
     if frame == 0: # initialize counts from last received count signals
       self.lkas11_cnt = CS.lkas11["CF_Lkas_MsgCount"] + 1
-
     self.lkas11_cnt %= 0x10
 
     can_sends.append(create_lkas11(self.packer, self.lkas11_cnt, self.car_fingerprint, apply_steer, steer_req,
-                                   CS.lkas11, sys_warning, sys_state, enabled,
-                                   left_lane, right_lane  ))
+                                   CS.lkas11, sys_warning, sys_state, CC ))
 
-    #if not CS.Mdps_ToiUnavail:
     can_sends.append(create_mdps12(self.packer, frame, CS.mdps12))
 
-
-
-    #dRel2, yRel2, vRel2 = SpdController.get_radarState( sm )
-    
-
-    str_log1 = 'torg:{:5.0f} C={:.1f}/{:.1f} V={:.1f}/{:.1f} '.format(  apply_steer, CS.lead_objspd, CS.lead_distance, dRel, vRel )
+    str_log1 = 'torg:{:5.0f} C={:.1f}/{:.1f} V={:.1f}/{:.1f} '.format(  apply_steer, CS.lead_objspd, CS.lead_distance, self.dRel, self.vRel )
     str_log2 = 'limit={:.0f} LC={} tm={:.1f}'.format( apply_steer_limit, path_plan.laneChangeState, self.timer1.sampleTime()  )
     trace1.printf( '{} {}'.format( str_log1, str_log2 ) )
 
-    str_log2 = 'U={:.0f}  LK={:.0f} steer={:5.0f} dir={}'.format( CS.Mdps_ToiUnavail, CS.lkas_button_on, CS.out.steeringTorque, self.steer_torque_ratio_dir  )
+    str_log2 = 'U={:.0f}  LK={:.0f} dir={} steer={:5.0f} '.format( CS.Mdps_ToiUnavail, CS.lkas_button_on, self.steer_torque_ratio_dir, CS.out.steeringTorque  )
     trace1.printf2( '{}'.format( str_log2 ) )
 
     if pcm_cancel_cmd:

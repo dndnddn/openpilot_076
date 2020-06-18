@@ -313,7 +313,7 @@ class CarInterface(CarInterfaceBase):
       elif not self.CS.lkas_button_on:
         self.meg_name = EventName.invalidLkasSetting
         events.add( EventName.invalidLkasSetting )
-      elif self.CC.steer_torque_over_timer:
+      elif self.CC.steer_torque_over_timer and self.CC.steer_torque_ratio < 0.7:
         self.meg_name = EventName.steerTorqueOver
       elif self.CC.steer_torque_ratio < 0.5 and self.CS.clu_Vanz > 5:
         self.meg_name = EventName.steerTorqueLow
