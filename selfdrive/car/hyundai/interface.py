@@ -5,7 +5,7 @@ from selfdrive.car.hyundai.values import Ecu, ECU_FINGERPRINT, CAR, FINGERPRINTS
 from selfdrive.car import STD_CARGO_KG, scale_rot_inertia, scale_tire_stiffness, is_ecu_disconnected, gen_empty_fingerprint
 from selfdrive.car.interfaces import CarInterfaceBase, MAX_CTRL_SPEED
 
-from selfdrive.kegman_conf import kegman_conf
+#from selfdrive.kegman_conf import kegman_conf
 
 EventName = car.CarEvent.EventName
 ButtonType = car.CarState.ButtonEvent.Type
