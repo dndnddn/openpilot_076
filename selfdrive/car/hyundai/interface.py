@@ -312,7 +312,8 @@ class CarInterface(CarInterfaceBase):
         meg_timer = 0
       elif not self.CS.lkas_button_on:
         self.meg_name = EventName.invalidLkasSetting
-        events.add( EventName.invalidLkasSetting )
+      elif ret.cruiseState.standstill:
+        self.meg_name = EventName.resumeRequired       
       elif self.CC.lane_change_torque_lower:
         self.meg_name = EventName.laneChangeManual
       elif self.CC.steer_torque_over_timer and self.CC.steer_torque_ratio < 0.7:
