@@ -111,6 +111,9 @@ class CarController():
     if v_ego_kph > 5 and abs( CS.out.steeringTorque ) > 180:  #사용자 핸들 토크
       self.steer_torque_over_timer = 200
 
+    if self.steer_torque_over_timer:
+      self.steer_torque_over_timer -= 1
+
     if path_plan.laneChangeState != LaneChangeState.off:
       self.steer_torque_ratio_dir = 1
       self.steer_torque_over_timer = 0
