@@ -314,10 +314,7 @@ class CarInterface(CarInterfaceBase):
         self.meg_name = EventName.invalidLkasSetting
         events.add( EventName.invalidLkasSetting )
       elif self.CC.lane_change_torque_lower:
-        if self.CC.lane_change_torque_lower == 1:
-          self.meg_name = EventName.preLaneChangeLeft
-        if self.CC.lane_change_torque_lower == 2:
-          self.meg_name = EventName.preLaneChangeRight
+        self.meg_name = EventName.laneChangeManual
       elif self.CC.steer_torque_over_timer and self.CC.steer_torque_ratio < 0.7:
         self.meg_name = EventName.steerTorqueOver
       elif self.CC.steer_torque_ratio < 0.5 and self.CS.clu_Vanz > 5:

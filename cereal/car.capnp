@@ -113,6 +113,7 @@ struct CarEvent @0x9b1657f34caf3ad3 {
     neosUpdateRequired @88;
     steerTorqueOver @89;
     steerTorqueLow @90;
+    laneChangeManual @91;
   }
 }
 
