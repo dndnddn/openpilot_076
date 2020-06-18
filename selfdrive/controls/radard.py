@@ -107,8 +107,8 @@ def get_lead_lane_priority(v_ego, ready, clusters, lead_msg, low_speed_override=
       if (not lead_dict['status']) or (closest_cluster.dRel < lead_dict['dRel']):
         lead_dict = closest_cluster.get_RadarState()
 
-  if lead_dict['dRel'] is not None:
-    lead_dict['dRel'] = 0
+
+  lead_dict['dRel'] = 0
 
 
   return lead_dict
