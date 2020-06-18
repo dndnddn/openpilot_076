@@ -1008,7 +1008,7 @@ static void ui_draw_vision_event(UIState *s) {
     const int bg_wheel_size = 96;
     const int bg_wheel_x = viz_event_x + (viz_event_w-bg_wheel_size);
     const int bg_wheel_y = viz_event_y + (bg_wheel_size/2);
-    //const float img_rotation = 1; //s->scene.angleSteers/180*3.141592;
+
 
     bool is_engageable = s->scene.engageable;
 
@@ -1028,11 +1028,7 @@ static void ui_draw_vision_event(UIState *s) {
 
     if( is_engageable )  // debug_atom
     {
-      //nvgSave(s->vg);
-      //nvgTranslate(s->vg, bg_wheel_x, bg_wheel_y);
-      //nvgRotate(s->vg,-img_rotation);
       ui_draw_circle_image(s->vg, bg_wheel_x, bg_wheel_y, bg_wheel_size, s->img_wheel, color, 1.0f, bg_wheel_y - 25);
-      //nvgRestore(s->vg);
     }
   }
 }
