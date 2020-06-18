@@ -954,8 +954,14 @@ static void ui_draw_debug(UIState *s)
   nvgText(s->vg, x_pos, y_pos+0, speed_str, NULL);
   snprintf(speed_str, sizeof(speed_str), "D:%d,%d", scene.leftBlinker, scene.rightBlinker  );
   nvgText(s->vg, x_pos, y_pos+50, speed_str, NULL);   
-  snprintf(speed_str, sizeof(speed_str), "G:%d,%d,%d", (int)scene.getGearShifter, scene.engaged, scene.engageable   );
+  snprintf(speed_str, sizeof(speed_str), "G:%d,%d,%d", (int)scene.getGearShifter, scene.engaged, scene.engageable , scene.lead_y_rel  );
   nvgText(s->vg, x_pos, y_pos+100, speed_str, NULL);   
+
+  snprintf(speed_str, sizeof(speed_str), "L1:%.1f,%.1f,%.1f", (int)scene.lead_status, scene.lead_d_rel, scene.lead_y_rel , scene.lead_v_rel  );
+  nvgText(s->vg, x_pos, y_pos+150, speed_str, NULL);   
+
+  snprintf(speed_str, sizeof(speed_str), "L2:%.1f,%.1f,%.1f", (int)scene.lead_status2, scene.lead_d_rel2, scene.lead_y_rel2 , scene.lead_v_rel2  );
+  nvgText(s->vg, x_pos, y_pos+200, speed_str, NULL);   
 
 
 
