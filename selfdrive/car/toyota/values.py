@@ -912,7 +912,7 @@ FW_VERSIONS = {
   },
 }
 
-STEER_THRESHOLD = 80
+STEER_THRESHOLD = 100
 
 DBC = {
   CAR.RAV4H: dbc_dict('toyota_rav4_hybrid_2017_pt_generated', 'toyota_adas'),
