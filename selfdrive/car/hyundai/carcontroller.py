@@ -91,6 +91,7 @@ class CarController():
 
     abs_angle_steers =  abs(actuators.steerAngle)
     v_ego_kph = CS.out.vEgo * CV.MS_TO_KPH
+    dRel, yRel, vRel = SpdController.get_lead( sm )
 
     # Steering Torque
     param = SteerLimitParams()
@@ -123,7 +124,7 @@ class CarController():
     elif self.steer_torque_over_timer:  #or CS.out.steerWarning:
       self.steer_torque_ratio_dir = -1
       self.steer_torque_ratio -= 0.05
-    elif not left_lane  and not right_lane:
+    elif dRel > 80 and (not left_lane  and not right_lane):
       if self.steer_torque_ratio > 0.2:
         self.steer_torque_ratio -= 0.1
         self.steer_torque_ratio_dir = -1
@@ -179,7 +180,7 @@ class CarController():
     can_sends.append(create_mdps12(self.packer, frame, CS.mdps12))
 
 
-    dRel, yRel, vRel = SpdController.get_lead( sm )
+
     #dRel2, yRel2, vRel2 = SpdController.get_radarState( sm )
     
 
