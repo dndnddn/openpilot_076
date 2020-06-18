@@ -121,6 +121,7 @@ class CarController():
       self.steer_torque_ratio_dir = -1
     elif not left_lane  and not right_lane:
       if self.steer_torque_ratio > 0.2:
+        self.steer_torque_ratio -= 0.01
         self.steer_torque_ratio_dir = -1
       else:
         self.steer_torque_ratio_dir = 0  # 유지.
