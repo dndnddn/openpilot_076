@@ -1029,8 +1029,8 @@ static void ui_draw_vision_event(UIState *s) {
     //if( is_engageable )  // debug_atom
     //{
       //nvgSave(s->vg);
-      nvgTranslate(s->vg, bg_wheel_x, bg_wheel_y);
-      nvgRotate(s->vg,-img_rotation);
+      //nvgTranslate(s->vg, bg_wheel_x, bg_wheel_y);
+      //nvgRotate(s->vg,-img_rotation);
       ui_draw_circle_image(s->vg, bg_wheel_x, bg_wheel_y, bg_wheel_size, s->img_wheel, color, 1.0f, bg_wheel_y - 25);
       //nvgRestore(s->vg);
     //}
