@@ -101,11 +101,9 @@ class CarController():
         param.STEER_DELTA_DOWN = 3
 
 
-
     new_steer = actuators.steer * param.STEER_MAX
     apply_steer = apply_std_steer_torque_limits(new_steer, self.apply_steer_last, CS.out.steeringTorque, param)
     self.steer_rate_limited = new_steer != apply_steer
-
 
 
     # streer over check
@@ -138,11 +136,13 @@ class CarController():
       if self.steer_torque_ratio < 1:
         self.steer_torque_ratio += 0.002
     elif self.steer_torque_ratio_dir <= -1:
-      if self.steer_torque_ratio > 0:
+      if self.steer_torque_ratio > 0.1:
         self.steer_torque_ratio -= 0.002
 
     if self.steer_torque_ratio < 0.1:
       self.steer_torque_ratio = 0.1
+    elif self.steer_torque_ratio > 1:
+      self.steer_torque_ratio = 1
 
     apply_steer_limit = param.STEER_MAX
     if self.steer_torque_ratio < 1:
