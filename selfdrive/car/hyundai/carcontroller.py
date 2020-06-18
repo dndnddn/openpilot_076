@@ -141,6 +141,8 @@ class CarController():
       if self.steer_torque_ratio > 0:
         self.steer_torque_ratio -= 0.002
 
+    if self.steer_torque_ratio < 0.1:
+      self.steer_torque_ratio = 0.1
 
     apply_steer_limit = param.STEER_MAX
     if self.steer_torque_ratio < 1:
