@@ -4,6 +4,7 @@ from selfdrive.car.hyundai.hyundaican import create_lkas11, create_clu11, create
 from selfdrive.car.hyundai.values import Buttons, SteerLimitParams, CAR
 from opendbc.can.packer import CANPacker
 from selfdrive.config import Conversions as CV
+
 from selfdrive.car.hyundai.spdcontroller  import SpdController
 import common.log as trace1
 import common.CTime1000 as tm
@@ -36,7 +37,10 @@ class CarController():
     self.vRel = 0
 
     self.timer1 = tm.CTime1000("time")
-
+    self.SC = SpdController()    
+    self.model_speed = 0
+    self.model_sum = 0
+    
     # hud
     self.hud_timer_left = 0
     self.hud_timer_right = 0
@@ -101,14 +105,19 @@ class CarController():
       self.steer_torque_over_timer = 0
 
     # 차선이 없고 앞차량이 없으면.
-    steer_angle_lower = self.dRel > 40 and (not CC.hudControl.leftLaneVisible  and not CC.hudControl.rightLaneVisible)
-
+    steer_angle_lower = self.dRel > 30 and (not CC.hudControl.leftLaneVisible  and not CC.hudControl.rightLaneVisible)
+    lane_change_torque_lower = 0
     if v_ego_kph < 1:
       self.steer_torque_over_timer = 0
       self.steer_torque_ratio_dir = 1
     elif path_plan.laneChangeState != LaneChangeState.off:
       self.steer_torque_ratio_dir = 1
       self.steer_torque_over_timer = 0
+    elif CS.out.leftBlinker or CS.out.rightBlinker:
+      lane_change_torque_lower = int(CS.out.leftBlinker) + int(CS.out.rightBlinker) * 2
+      self.steer_torque_ratio_dir = 1
+      if CS.out.steeringPressed:
+        self.steer_torque_ratio = 0.2
     elif self.steer_torque_over_timer:  #or CS.out.steerWarning:
       self.steer_torque_ratio_dir = -1
     elif steer_angle_lower:  
@@ -118,6 +127,7 @@ class CarController():
     else:
       self.steer_torque_ratio_dir = 1
 
+    self.lane_change_torque_lower =  lane_change_torque_lower
     # smoth torque enable or disable
     if self.steer_torque_ratio_dir >= 1:
       if self.steer_torque_ratio < 1:
@@ -135,7 +145,7 @@ class CarController():
 
 
 
-  def update(self, CC, CS, frame,  sm ):
+  def update(self, CC, CS, frame, sm ):
     enabled = CC.enabled
     actuators = CC.actuators
     pcm_cancel_cmd = CC.cruiseControl.cancel
@@ -146,6 +156,7 @@ class CarController():
     abs_angle_steers =  abs(actuators.steerAngle)
 
     self.dRel, self.yRel, self.vRel = SpdController.get_lead( sm )
+    self.model_speed, self.model_sum = self.SC.calc_va(  sm, CS.out.vEgo  )
 
 
     # Steering Torque
@@ -189,7 +200,7 @@ class CarController():
 
     can_sends.append(create_mdps12(self.packer, frame, CS.mdps12))
 
-    str_log1 = 'torg:{:5.0f} C={:.1f}/{:.1f} V={:.1f}/{:.1f} '.format(  apply_steer, CS.lead_objspd, CS.lead_distance, self.dRel, self.vRel )
+    str_log1 = 'torg:{:5.0f} C={:.1f}/{:.1f} V={:.1f}/{:.1f} CV={:.1f}/{:.3f}'.format(  apply_steer, CS.lead_objspd, CS.lead_distance, self.dRel, self.vRel, self.model_speed, self.model_sum )
     str_log2 = 'limit={:.0f} LC={} tm={:.1f}'.format( apply_steer_limit, path_plan.laneChangeState, self.timer1.sampleTime()  )
     trace1.printf( '{} {}'.format( str_log1, str_log2 ) )
 
