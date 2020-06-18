@@ -114,11 +114,15 @@ class CarController():
     if self.steer_torque_over_timer:
       self.steer_torque_over_timer -= 1
 
-    if path_plan.laneChangeState != LaneChangeState.off:
+    if v_ego_kph < 1: 
+      self.steer_torque_over_timer = 0
+      self.steer_torque_ratio_dir = 1
+    elif path_plan.laneChangeState != LaneChangeState.off:
       self.steer_torque_ratio_dir = 1
       self.steer_torque_over_timer = 0
     elif self.steer_torque_over_timer:  #or CS.out.steerWarning:
       self.steer_torque_ratio_dir = -1
+      self.steer_torque_ratio -= 0.05
     elif not left_lane  and not right_lane:
       if self.steer_torque_ratio > 0.2:
         self.steer_torque_ratio -= 0.1
@@ -131,10 +135,10 @@ class CarController():
     # smoth torque enable or disable
     if self.steer_torque_ratio_dir >= 1:
       if self.steer_torque_ratio < 1:
-        self.steer_torque_ratio += 0.001
+        self.steer_torque_ratio += 0.002
     elif self.steer_torque_ratio_dir <= -1:
       if self.steer_torque_ratio > 0:
-        self.steer_torque_ratio -= 0.001
+        self.steer_torque_ratio -= 0.002
 
 
     apply_steer_limit = param.STEER_MAX

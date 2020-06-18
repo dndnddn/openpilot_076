@@ -136,14 +136,16 @@ class Controls:
 
     self.startup_event = get_startup_event(car_recognized, controller_available, hw_type)
 
+
     if not sounds_available:
       self.events.add(EventName.soundsUnavailable, static=True)
-    if internet_needed:
+    elif self.read_only and not passive:
+      self.events.add(EventName.carUnrecognized, static=True)      
+    elif internet_needed:
       self.events.add(EventName.internetConnectivityNeeded, static=True)
-    if community_feature_disallowed:
+    elif community_feature_disallowed:
       self.events.add(EventName.communityFeatureDisallowed, static=True)
-    if self.read_only and not passive:
-      self.events.add(EventName.carUnrecognized, static=True)
+
     # if hw_type == HwType.whitePanda:
     #   self.events.add(EventName.whitePandaUnsupported, static=True)
 
@@ -166,21 +168,17 @@ class Controls:
     self.events.add_from_msg(CS.events)
     self.events.add_from_msg(self.sm['dMonitoringState'].events)
 
-    # Handle startup event
-    if self.startup_event is not None:
-      self.events.add(self.startup_event)
-      self.startup_event = None
 
     # Create events for battery, temperature, disk space, and memory
     if self.sm['thermal'].batteryPercent < 1 and self.sm['thermal'].chargingError:
       # at zero percent battery, while discharging, OP should not allowed
       self.events.add(EventName.lowBattery)
-    if self.sm['thermal'].thermalStatus >= ThermalStatus.red:
+    elif self.sm['thermal'].thermalStatus >= ThermalStatus.red:
       self.events.add(EventName.overheat)
-    if self.sm['thermal'].freeSpace < 0.07:
+    elif self.sm['thermal'].freeSpace < 0.07:
       # under 7% of space free no enable allowed
       self.events.add(EventName.outOfSpace)
-    if self.sm['thermal'].memUsedPercent > 90:
+    elif self.sm['thermal'].memUsedPercent > 90:
       self.events.add(EventName.lowMemory)
 
     # Handle calibration status
@@ -190,9 +188,13 @@ class Controls:
         self.events.add(EventName.calibrationIncomplete)
       else:
         self.events.add(EventName.calibrationInvalid)
+    # Handle startup event
+    elif self.startup_event is not None:
+      self.events.add(self.startup_event)
+      self.startup_event = None        
 
     # Handle lane change
-    if self.sm['pathPlan'].laneChangeState == LaneChangeState.preLaneChange:
+    elif self.sm['pathPlan'].laneChangeState == LaneChangeState.preLaneChange:
       if self.sm['pathPlan'].laneChangeDirection == LaneChangeDirection.left:
         self.events.add(EventName.preLaneChangeLeft)
       else:
