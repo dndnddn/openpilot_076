@@ -13,9 +13,9 @@ class LatControlPID():
     self.angle_steers_des = 0.
 
 
-    self.steer_Kp1 = [0.10,0.11]
-    self.steer_Ki1 = [0.01,0.01]
-    self.steer_Kf1 = [0.00001,0.00001]
+    self.steer_Kp1 = [0.12,0.12]
+    self.steer_Ki1 = [0.008,0.01]
+    self.steer_Kf1 = [0.000001,0.00001]
 
     self.steer_Kp2 = [0.14,0.15]
     self.steer_Ki2 = [0.02,0.02]
