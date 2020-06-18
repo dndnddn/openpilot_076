@@ -164,7 +164,7 @@ ThermalStatus = cereal.log.ThermalData.ThermalStatus
 # comment out anything you don't want to run
 managed_processes = {
   "thermald": "selfdrive.thermald.thermald",
-  "uploader": "selfdrive.loggerd.uploader",  # delete able
+  #"uploader": "selfdrive.loggerd.uploader",  # delete able
   "deleter": "selfdrive.loggerd.deleter",
   "controlsd": "selfdrive.controls.controlsd",
   "plannerd": "selfdrive.controls.plannerd",
