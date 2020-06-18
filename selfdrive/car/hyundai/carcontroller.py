@@ -179,7 +179,7 @@ class CarController():
     str_log2 = 'limit={:.0f} LC={} tm={:.1f}'.format( apply_steer_limit, path_plan.laneChangeState, self.timer1.sampleTime()  )
     trace1.printf( '{} {}'.format( str_log1, str_log2 ) )
 
-    str_log2 = 'U={:.0f}  LK={:.0f} steer={:5.0f} '.format( CS.Mdps_ToiUnavail, CS.lkas_button_on, CS.out.steeringTorque  )
+    str_log2 = 'U={:.0f}  LK={:.0f} steer={:5.0f} dir={}'.format( CS.Mdps_ToiUnavail, CS.lkas_button_on, CS.out.steeringTorque, self.steer_torque_ratio_dir  )
     trace1.printf2( '{}'.format( str_log2 ) )
 
     if pcm_cancel_cmd:
