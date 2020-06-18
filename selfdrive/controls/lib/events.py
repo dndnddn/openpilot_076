@@ -436,7 +436,7 @@ EVENTS = {
       "Steer Manual Lane Change",
       "Monitor Other Vehicles",
       AlertStatus.userPrompt, AlertSize.mid,
-      Priority.LOW, VisualAlert.steerRequired, AudibleAlert.chimePrompt, .0, 0., .1),
+      Priority.LOW, VisualAlert.steerRequired, AudibleAlert.none, .0, .1, .1, alert_rate=0.75),
   },
 
   EventName.steerSaturated: {

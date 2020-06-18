@@ -118,7 +118,7 @@ class CarController():
       lane_change_torque_lower = int(CS.out.leftBlinker) + int(CS.out.rightBlinker) * 2
       self.steer_torque_ratio_dir = 1
       if CS.out.steeringPressed:
-        self.steer_torque_ratio = 0.2
+        self.steer_torque_ratio = 0.1
     elif self.steer_torque_over_timer:  #or CS.out.steerWarning:
       self.steer_torque_ratio_dir = -1
     elif steer_angle_lower:  
@@ -137,8 +137,8 @@ class CarController():
       if self.steer_torque_ratio > 0.1:
         self.steer_torque_ratio -= 0.002
 
-    if self.steer_torque_ratio < 0.1:
-      self.steer_torque_ratio = 0.1
+    if self.steer_torque_ratio < 0:
+      self.steer_torque_ratio = 0
     elif self.steer_torque_ratio > 1:
       self.steer_torque_ratio = 1
 
