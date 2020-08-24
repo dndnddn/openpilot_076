@@ -9,6 +9,9 @@
 #include "common/params.h"
 #include "driving.h"
 
+
+
+
 #define PATH_IDX 0
 #define LL_IDX PATH_IDX + MODEL_PATH_DISTANCE*2 + 1
 #define RL_IDX LL_IDX + MODEL_PATH_DISTANCE*2 + 2
@@ -45,18 +48,23 @@ void model_init(ModelState* s, cl_device_id device_id, cl_context context, int t
 #endif
 
 #ifdef DESIRE
-  s->prev_desire = std::make_unique<float[]>(DESIRE_LEN);
-  s->pulse_desire = std::make_unique<float[]>(DESIRE_LEN);
-  s->m->addDesire(s->pulse_desire.get(), DESIRE_LEN);
+  s->prev_desire = (float*)malloc(DESIRE_LEN * sizeof(float));
+  for (int i = 0; i < DESIRE_LEN; i++) s->prev_desire[i] = 0.0;
+  s->pulse_desire = (float*)malloc(DESIRE_LEN * sizeof(float));
+  for (int i = 0; i < DESIRE_LEN; i++) s->pulse_desire[i] = 0.0;
+  s->m->addDesire(s->pulse_desire, DESIRE_LEN);
 #endif
 
 #ifdef TRAFFIC_CONVENTION
-  s->traffic_convention = std::make_unique<float[]>(TRAFFIC_CONVENTION_LEN);
-  s->m->addTrafficConvention(s->traffic_convention.get(), TRAFFIC_CONVENTION_LEN);
+  s->traffic_convention = (float*)malloc(TRAFFIC_CONVENTION_LEN * sizeof(float));
+  for (int i = 0; i < TRAFFIC_CONVENTION_LEN; i++) s->traffic_convention[i] = 0.0;
+  s->m->addTrafficConvention(s->traffic_convention, TRAFFIC_CONVENTION_LEN);
 
-  std::vector<char> result = read_db_bytes("IsRHD");
-  if (result.size() > 0) {
-    bool is_rhd = result[0] == '1';
+  char *string;
+  const int result = read_db_value("IsRHD", &string, NULL);
+  if (result == 0) {
+    bool is_rhd = string[0] == '1';
+    free(string);
     if (is_rhd) {
       s->traffic_convention[1] = 1.0;
     } else {
@@ -72,6 +80,8 @@ void model_init(ModelState* s, cl_device_id device_id, cl_context context, int t
     }
   }
 }
+
+
 
 ModelDataRaw model_eval_frame(ModelState* s, cl_command_queue q,
                            cl_mem yuv_cl, int width, int height,
@@ -91,6 +101,7 @@ ModelDataRaw model_eval_frame(ModelState* s, cl_command_queue q,
     }
   }
 #endif
+
 
   //for (int i = 0; i < OUTPUT_SIZE + TEMPORAL_SIZE; i++) { printf("%f ", s->output[i]); } printf("\n");
 
@@ -154,6 +165,7 @@ void poly_fit(float *in_pts, float *in_stds, float *out, int valid_len) {
   out[3] = y0;
 }
 
+
 void fill_path(cereal::ModelData::PathData::Builder path, const float * data, bool has_prob, const float offset) {
   float points_arr[MODEL_PATH_DISTANCE];
   float stds_arr[MODEL_PATH_DISTANCE];
@@ -163,7 +175,7 @@ void fill_path(cereal::ModelData::PathData::Builder path, const float * data, bo
   float valid_len;
 
   // clamp to 5 and 192
-  valid_len = fmin(192, fmax(5, data[MODEL_PATH_DISTANCE*2]));
+  valid_len =  fmin(192, fmax(5, data[MODEL_PATH_DISTANCE*2]));
   for (int i=0; i<MODEL_PATH_DISTANCE; i++) {
     points_arr[i] = data[i] + offset;
     stds_arr[i] = softplus(data[MODEL_PATH_DISTANCE + i]) + 1e-6;
@@ -188,7 +200,6 @@ void fill_path(cereal::ModelData::PathData::Builder path, const float * data, bo
   path.setPoly(poly);
   path.setProb(prob);
   path.setStd(std);
-  path.setValidLen(valid_len);
 }
 
 void fill_lead(cereal::ModelData::LeadData::Builder lead, const float * data, int mdn_max_idx, int t_offset) {
@@ -235,62 +246,57 @@ void fill_longi(cereal::ModelData::LongitudinalData::Builder longi, const float 
   longi.setAccelerations(accel);
 }
 
-void model_publish(PubMaster &pm, uint32_t vipc_frame_id, uint32_t frame_id,
-                   uint32_t vipc_dropped_frames, float frame_drop, const ModelDataRaw &net_outputs, uint64_t timestamp_eof) {
-  // make msg
-  capnp::MallocMessageBuilder msg;
-  cereal::Event::Builder event = msg.initRoot<cereal::Event>();
-  event.setLogMonoTime(nanos_since_boot());
+void model_publish(PubMaster &pm, uint32_t frame_id,
+                   const ModelDataRaw &net_outputs, uint64_t timestamp_eof) {
+    // make msg
+    capnp::MallocMessageBuilder msg;
+    cereal::Event::Builder event = msg.initRoot<cereal::Event>();
+    event.setLogMonoTime(nanos_since_boot());
 
-  uint32_t frame_age = (frame_id > vipc_frame_id) ? (frame_id - vipc_frame_id) : 0;
+    auto framed = event.initModel();
+    framed.setFrameId(frame_id);
+    framed.setTimestampEof(timestamp_eof);
 
-  auto framed = event.initModel();
-  framed.setFrameId(vipc_frame_id);
-  framed.setFrameAge(frame_age);
-  framed.setFrameDropPerc(frame_drop * 100);
-  framed.setTimestampEof(timestamp_eof);
-
-  auto lpath = framed.initPath();
-  fill_path(lpath, net_outputs.path, false, 0);
-  auto left_lane = framed.initLeftLane();
-  fill_path(left_lane, net_outputs.left_lane, true, 1.8);
-  auto right_lane = framed.initRightLane();
-  fill_path(right_lane, net_outputs.right_lane, true, -1.8);
-  auto longi = framed.initLongitudinal();
-  fill_longi(longi, net_outputs.long_x, net_outputs.long_v, net_outputs.long_a);
+    auto lpath = framed.initPath();
+    fill_path(lpath, net_outputs.path, false, 0);
+    auto left_lane = framed.initLeftLane();
+    fill_path(left_lane, net_outputs.left_lane, true, 1.8);
+    auto right_lane = framed.initRightLane();
+    fill_path(right_lane, net_outputs.right_lane, true, -1.8);
+    auto longi = framed.initLongitudinal();
+    fill_longi(longi, net_outputs.long_x, net_outputs.long_v, net_outputs.long_a);
 
 
-  // Find the distribution that corresponds to the current lead
-  int mdn_max_idx = 0;
-  int t_offset = 0;
-  for (int i=1; i<LEAD_MDN_N; i++) {
-    if (net_outputs.lead[i*MDN_GROUP_SIZE + 8 + t_offset] > net_outputs.lead[mdn_max_idx*MDN_GROUP_SIZE + 8 + t_offset]) {
-      mdn_max_idx = i;
+    // Find the distribution that corresponds to the current lead
+    int mdn_max_idx = 0;
+    int t_offset = 0;
+    for (int i=1; i<LEAD_MDN_N; i++) {
+      if (net_outputs.lead[i*MDN_GROUP_SIZE + 8 + t_offset] > net_outputs.lead[mdn_max_idx*MDN_GROUP_SIZE + 8 + t_offset]) {
+        mdn_max_idx = i;
+      }
     }
-  }
-  auto lead = framed.initLead();
-  fill_lead(lead, net_outputs.lead, mdn_max_idx, t_offset);
-  // Find the distribution that corresponds to the lead in 2s
-  mdn_max_idx = 0;
-  t_offset = 1;
-  for (int i=1; i<LEAD_MDN_N; i++) {
-    if (net_outputs.lead[i*MDN_GROUP_SIZE + 8 + t_offset] > net_outputs.lead[mdn_max_idx*MDN_GROUP_SIZE + 8 + t_offset]) {
-      mdn_max_idx = i;
+    auto lead = framed.initLead();
+    fill_lead(lead, net_outputs.lead, mdn_max_idx, t_offset);
+    // Find the distribution that corresponds to the lead in 2s
+    mdn_max_idx = 0;
+    t_offset = 1;
+    for (int i=1; i<LEAD_MDN_N; i++) {
+      if (net_outputs.lead[i*MDN_GROUP_SIZE + 8 + t_offset] > net_outputs.lead[mdn_max_idx*MDN_GROUP_SIZE + 8 + t_offset]) {
+        mdn_max_idx = i;
+      }
     }
+    auto lead_future = framed.initLeadFuture();
+    fill_lead(lead_future, net_outputs.lead, mdn_max_idx, t_offset);
+
+
+    auto meta = framed.initMeta();
+    fill_meta(meta, net_outputs.meta);
+
+    pm.send("model", msg);
   }
-  auto lead_future = framed.initLeadFuture();
-  fill_lead(lead_future, net_outputs.lead, mdn_max_idx, t_offset);
 
-
-  auto meta = framed.initMeta();
-  fill_meta(meta, net_outputs.meta);
-  event.setValid(frame_drop < MAX_FRAME_DROP);
-
-  pm.send("model", msg);
-}
-
-void posenet_publish(PubMaster &pm, uint32_t vipc_frame_id, uint32_t frame_id,
-                     uint32_t vipc_dropped_frames, float frame_drop, const ModelDataRaw &net_outputs, uint64_t timestamp_eof) {
+void posenet_publish(PubMaster &pm, uint32_t frame_id,
+                   const ModelDataRaw &net_outputs, uint64_t timestamp_eof) {
   capnp::MallocMessageBuilder msg;
   cereal::Event::Builder event = msg.initRoot<cereal::Event>();
   event.setLogMonoTime(nanos_since_boot());
@@ -318,11 +324,8 @@ void posenet_publish(PubMaster &pm, uint32_t vipc_frame_id, uint32_t frame_id,
   kj::ArrayPtr<const float> rot_std_vs(&rot_std_arr[0], 3);
   posenetd.setRotStd(rot_std_vs);
 
-
   posenetd.setTimestampEof(timestamp_eof);
-  posenetd.setFrameId(vipc_frame_id);
-
-  event.setValid(vipc_dropped_frames < 1);
+  posenetd.setFrameId(frame_id);
 
   pm.send("cameraOdometry", msg);
 }

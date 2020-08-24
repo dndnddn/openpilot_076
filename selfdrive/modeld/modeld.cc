@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <signal.h>
 #include <eigen3/Eigen/Dense>
 
 #include "common/visionbuf.h"
@@ -21,6 +20,7 @@ mat3 cur_transform;
 pthread_mutex_t transform_lock;
 
 void* live_thread(void *arg) {
+  int err;
   set_thread_name("live");
 
   SubMaster sm({"liveCalibration"});
@@ -44,7 +44,7 @@ void* live_thread(void *arg) {
 
   while (!do_exit) {
     if (sm.update(10) > 0){
-
+      
       auto extrinsic_matrix = sm["liveCalibration"].getLiveCalibration().getExtrinsicMatrix();
       Eigen::Matrix<float, 3, 4> extrinsic_matrix_eigen;
       for (int i = 0; i < 4*3; i++){
@@ -73,10 +73,7 @@ void* live_thread(void *arg) {
 
 int main(int argc, char **argv) {
   int err;
-  set_realtime_priority(51);
-
-  signal(SIGINT, (sighandler_t)set_do_exit);
-  signal(SIGTERM, (sighandler_t)set_do_exit);
+  set_realtime_priority(1);
 
   // start calibration thread
   pthread_t live_thread_handle;
@@ -85,66 +82,42 @@ int main(int argc, char **argv) {
 
   // messaging
   PubMaster pm({"model", "cameraOdometry"});
-  SubMaster sm({"pathPlan", "frame"});
-
-#ifdef QCOM
-  cl_device_type device_type = CL_DEVICE_TYPE_DEFAULT;
-#else
-  cl_device_type device_type = CL_DEVICE_TYPE_CPU;
-#endif
+  SubMaster sm({"pathPlan"});
 
   // cl init
   cl_device_id device_id;
   cl_context context;
   cl_command_queue q;
   {
+    // TODO: refactor this
+    cl_platform_id platform_id[2];
+    cl_uint num_devices;
     cl_uint num_platforms;
-    err = clGetPlatformIDs(0, NULL, &num_platforms);
+
+    err = clGetPlatformIDs(sizeof(platform_id)/sizeof(cl_platform_id), platform_id, &num_platforms);
     assert(err == 0);
 
-    cl_platform_id * platform_ids = new cl_platform_id[num_platforms];
-    err = clGetPlatformIDs(num_platforms, platform_ids, NULL);
-    assert(err == 0);
-
-    LOGD("got %d opencl platform(s)", num_platforms);
+    #ifdef QCOM
+      int clPlatform = 0;
+    #else
+      // don't use nvidia on pc, it's broken
+      // TODO: write this nicely
+      int clPlatform = num_platforms-1;
+    #endif
 
     char cBuffer[1024];
-    bool opencl_platform_found = false;
+    clGetPlatformInfo(platform_id[clPlatform], CL_PLATFORM_NAME, sizeof(cBuffer), &cBuffer, NULL);
+    LOGD("got %d opencl platform(s), using %s", num_platforms, cBuffer);
 
-    for (size_t i = 0; i < num_platforms; i++){
-      err = clGetPlatformInfo(platform_ids[i], CL_PLATFORM_NAME, sizeof(cBuffer), &cBuffer, NULL);
-      assert(err == 0);
-      LOGD("platform[%zu] CL_PLATFORM_NAME: %s", i, cBuffer);
+    err = clGetDeviceIDs(platform_id[clPlatform], CL_DEVICE_TYPE_DEFAULT, 1,
+                         &device_id, &num_devices);
+    assert(err == 0);
 
-      cl_uint num_devices;
-      err = clGetDeviceIDs(platform_ids[i], device_type, 0, NULL, &num_devices);
-      if (err != 0|| !num_devices){
-        continue;
-      }
+    context = clCreateContext(NULL, 1, &device_id, NULL, NULL, &err);
+    assert(err == 0);
 
-      // Get first device
-      err = clGetDeviceIDs(platform_ids[i], device_type, 1, &device_id, NULL);
-      assert(err == 0);
-
-      context = clCreateContext(NULL, 1, &device_id, NULL, NULL, &err);
-      assert(err == 0);
-
-      q = clCreateCommandQueue(context, device_id, 0, &err);
-      assert(err == 0);
-
-      opencl_platform_found = true;
-      break;
-    }
-
-    delete[] platform_ids;
-
-    if (!opencl_platform_found){
-      LOGE("No valid openCL platform found");
-      assert(opencl_platform_found);
-    }
-
-
-    LOGD("opencl init complete");
+    q = clCreateCommandQueue(context, device_id, 0, &err);
+    assert(err == 0);
   }
 
   // init the models
@@ -171,17 +144,10 @@ int main(int argc, char **argv) {
     }
     LOGW("connected with buffer size: %d", buf_info.buf_len);
 
-    // setup filter to track dropped frames
-    const float dt = 1. / MODEL_FREQ;
-    const float ts = 5.0;  // 5 s filter time constant
-    const float frame_filter_k = (dt / ts) / (1. + dt / ts);
-    float frames_dropped = 0;
-
     // one frame in memory
     cl_mem yuv_cl;
     VisionBuf yuv_ion = visionbuf_allocate_cl(buf_info.buf_len, device_id, context, &yuv_cl);
 
-    uint32_t frame_id = 0, last_vipc_frame_id = 0;
     double last = 0;
     int desire = -1;
     while (!do_exit) {
@@ -190,6 +156,7 @@ int main(int argc, char **argv) {
       buf = visionstream_get(&stream, &extra);
       if (buf == NULL) {
         LOGW("visionstream get failed");
+        visionstream_destroy(&stream);
         break;
       }
 
@@ -201,7 +168,6 @@ int main(int argc, char **argv) {
       if (sm.update(0) > 0){
         // TODO: path planner timeout?
         desire = ((int)sm["pathPlan"].getPathPlan().getDesire()) - 1;
-        frame_id = sm["frame"].getFrame().getFrameId();
       }
 
       double mt1 = 0, mt2 = 0;
@@ -212,7 +178,7 @@ int main(int argc, char **argv) {
         }
 
         mat3 model_transform = matmul3(yuv_transform, transform);
-        
+
         mt1 = millis_since_boot();
 
         // TODO: don't make copies!
@@ -223,31 +189,24 @@ int main(int argc, char **argv) {
                              model_transform, NULL, vec_desire);
         mt2 = millis_since_boot();
 
-        // tracked dropped frames
-        uint32_t vipc_dropped_frames = extra.frame_id - last_vipc_frame_id - 1;
-        frames_dropped = (1. - frame_filter_k) * frames_dropped + frame_filter_k * (float)std::min(vipc_dropped_frames, 10U);
-        float frame_drop_perc = frames_dropped / MODEL_FREQ;
+        model_publish(pm, extra.frame_id, model_buf, extra.timestamp_eof);
+        posenet_publish(pm, extra.frame_id, model_buf, extra.timestamp_eof);
 
-        model_publish(pm, extra.frame_id, frame_id,  vipc_dropped_frames, frame_drop_perc, model_buf, extra.timestamp_eof);
-        posenet_publish(pm, extra.frame_id, frame_id, vipc_dropped_frames, frame_drop_perc, model_buf, extra.timestamp_eof);
-
-        LOGD("model process: %.2fms, from last %.2fms, vipc_frame_id %zu, frame_id, %zu, frame_drop %.3f", mt2-mt1, mt1-last, extra.frame_id, frame_id, frame_drop_perc);
+        LOGD("model process: %.2fms, from last %.2fms", mt2-mt1, mt1-last);
         last = mt1;
-        last_vipc_frame_id = extra.frame_id;
       }
 
     }
     visionbuf_free(&yuv_ion);
-    visionstream_destroy(&stream);
   }
+
+  visionstream_destroy(&stream);
 
   model_free(&model);
 
   LOG("joining live_thread");
   err = pthread_join(live_thread_handle, NULL);
   assert(err == 0);
-  clReleaseCommandQueue(q);
-  clReleaseContext(context);
 
   return 0;
 }
